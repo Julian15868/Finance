@@ -1,9 +1,14 @@
 import pandas as pd
-
+import sys
 #Se puede agregar para que puedas tomar los primeros n que quieras(10)
 
 #Cargamos el dataframe
-df = pd.read_csv("ResultsGraficoTorta.csv")
+try:
+  filename = sys.argv[1]
+  df = pd.read_csv(filename)
+except:
+  df = pd.read_csv("ResultsGraficoTorta.csv")
+
 df = df[["Symbol","Sector","Industry","Same Sub-Industry As","Market Capitalization","Price/Book (MRQ)","Price/Earnings (TTM)"]]
 df = df.rename(columns={'Price/Book (MRQ)':'PriceToBook',"Price/Earnings (TTM)":"Price/Earnings"})
 

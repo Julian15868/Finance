@@ -1,14 +1,15 @@
 #Librerias
-import requests,json,time
-from datetime import date, time, datetime, timedelta
+import requests,json,time,sys
 import pandas as pd, numpy as np
 import matplotlib.pyplot as plt
 import difflib #probabilidad
 import yfinance as yf
+from datetime import date, datetime, timedelta
 from IPython.display import clear_output #Para borrar la salida de codigo
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+
 #Configuramos selenium
 service = Service(executable_path="chromedriver.exe")
 service.start()
@@ -20,8 +21,14 @@ options.add_argument("--no-sandbox")
 options.add_argument('--disable-dev-shm-usage')
 
 ### Comienzo ###
-#Cargamos el dataframe y observamos
-Dataframe = pd.read_csv('stocks1.csv') #-> Hay que actualizar este por el que tiene 0 recomendaciones que tenemos guardado
+#Cargamos el dataframe 
+try:
+  filename = sys.argv[1]
+  Dataframe = pd.read_csv(filename)
+except:
+  Dataframe = pd.concat([pd.read_csv("stocks1.csv"),pd.read_csv("stocks2.csv")])
+  
+#Dataframe = pd.read_csv('stocks1.csv') #-> Hay que actualizar este por el que tiene 0 recomendaciones que tenemos guardado
 stocksTotales = list(Dataframe["Symbol"].head(100)) #Sacar el head luego
 print("El largo del stocksTotales es: "+str(len(stocksTotales)))
 print(stocksTotales,end=",")
@@ -127,7 +134,6 @@ def insiderTraders(stocksCargados,diasAtras):
     nombres = list(set(compraronNombres+vendieronNombres))
     nombresdataframe = pd.DataFrame({"Nombres":nombres})
 
-    ##Revisar esta funcion
     ## Como los nombres no son exactos, necesitamos una funcion de probabilidad para matchearlos(libreria difflib)
     def masProbable(nombre1,lista):
       nombreLista = ""
@@ -215,4 +221,3 @@ insiderTraders(stocksCargados,diasAtras) ##cambiar
 #
 # Volver a habilitar las advertenciasde pandas
 pd.options.mode.chained_assignment = 'warn'
-#
