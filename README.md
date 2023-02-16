@@ -4,10 +4,10 @@ Con este trabajo realizado en Python y Data Studio, lo que se busca es, identifi
 
 ------------
 
-#### **Este trabajo se divide en los siguientes tres programas (.py):**
+#### **Este trabajo se divide en los siguientes tres programas:**
 
 - **Competidores** : Se busca para cada uno de los stocks de una lista, sus competidores, filtrados y ordenados por su market capitalization. Terminada esta busqueda se busca informacion, ratios para compararlos, entre ellos estan: Price/Earnings,  Free cashflow, PTFCF, Profitability ratios, Activity ratios,Liquidity ratios,Debt ratios. Como ultimo se da una descripcion de la empresa.
-- ** Insiders** : Para cada uno de los stocks queremos saber que es lo que hacen con sus propias acciones las personas que estan dentro de la empresa, entonces teniendo esta informacion junto con el cargo de aquellos, con las fechas de las transacciones, las cantidades y demas, las comparamos con el precio historico de la accion en una cierta cantidad de dias. Con esto buscamos preveer que pasara en el futuro con la accion. Por ejemplo: Si dado un momento ellos empiezan a comprar una cantidad apreciable de acciones a la vez, piensan que el valor de su stock en el mercado va a subir.
+- **Insiders** : Para cada uno de los stocks queremos saber que es lo que hacen con sus propias acciones las personas que estan dentro de la empresa, entonces teniendo esta informacion junto con el cargo de aquellos, con las fechas de las transacciones, las cantidades y demas, las comparamos con el precio historico de la accion en una cierta cantidad de dias. Con esto buscamos preveer que pasara en el futuro con la accion. Por ejemplo: Si dado un momento ellos empiezan a comprar una cantidad apreciable de acciones a la vez, piensan que el valor de su stock en el mercado va a subir.
 - **accionesBaratas**: Usamos este programa para identificar stocks que estan baratos dado una lista de ellos, y lo hacemos por Sector, Industria y Subindustria, teniendo en cuenta el orden, por un lado por el Price to book y por otro, el Price/Earnings.
 
 ------------
