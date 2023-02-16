@@ -96,8 +96,6 @@ def buscarCompetencia(accion,mercados):
       continue
   return textoClean
 
-
-
 #Hacemos un funcion para cambiar el string que contiene un numero abreviado con un + "B" "M" o "T" a un entero
 def strToNum(string):
     string = str(string)

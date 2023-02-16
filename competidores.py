@@ -4,16 +4,16 @@ from funcionesCompetidores import *
 ### Codigo real ###
 ## Cargamos el dataframe
 data = pd.read_csv("stocks1.csv") 
-totalStocks = list(data["Symbol"][0:2]) #Aca estoy haciendo que agarre menos stocks para probar
-totalStocks = ["FLWS"]
+totalStocks = list(data["Symbol"]) 
+totalStocks = ["FLWS"] #Para probar
 print("Stocks a analizar: " + str(totalStocks))
 mercados = ["NASDAQ","NYSE"]
 
-#Este codigo lo sacamos del ciclo para que se ahorre tiempo
+#Este codigo estaba en el ciclo pero lo sacamos para ahorrar un poco de tiempo
 #El codigo agarra el nombre de unas estadisticas, para eso usamos un stock conocido->Meli ejemplo.
-accion2 = "MELI";symbol2 = yf.Ticker(accion2);infoFinanciera2 = symbol2.stats()["financialData"] #Usamos netflix que sabemos que tiene los datos-> dsp podemos ssacar y poner la lista de una y separar el print por ",
-estadistica = list(infoFinanciera2) #Son los nombres de las estadisticas que proporcionan una funcion de YF
-otrasEstadisticas = ["Price/Earning","Return on Sales","Days Receivable","Days Inventory","Debt to Assets","Leverage","Times Interest Earned"]#Despues poner el purchases(Days Payable)
+accion2 = "MELI";symbol2 = yf.Ticker(accion2);infoFinanciera2 = symbol2.stats()["financialData"] #Usamos MELI que sabemos que va a tener esta info
+estadistica = list(infoFinanciera2) 
+otrasEstadisticas = ["Price/Earning","Return on Sales","Days Receivable","Days Inventory","Debt to Assets","Leverage","Times Interest Earned"]
 print(estadistica)
 
 ##Buscamos los competidores de cada stock
@@ -22,18 +22,16 @@ for i in range(len(totalStocks)):
   #Buscamos la primera tanda de competencia
   accion,accionPrincipal = totalStocks[i],totalStocks[i] #Nos va a servir posteriormente tener dos nombres para la accion a analizar.
   print("Competencia de "+accion+":")
-  #textoClean = buscarCompetencia(accion,mercados)
   try:
     stocks = buscarPrimeraTandaCompetencia(accion,accionPrincipal)
-  except: # por si no esta la accion en la
+  except: # por si no esta la accion en la pagina de la funcion anterior
     stocks = buscarCompetencia(stocks[i],["NASDAQ","NYSE"])
 
   compe = []
   for i in range(len(stocks)):
     compe.append(buscarCompetencia(stocks[i],["NASDAQ","NYSE"]))
-  compe = list(set([item for sublist in compe for item in sublist])) #Unimos las distintas extracciones y scamos los repetidos
-  #Insertamos la accionPrincipal al principio(en caso de estar o no)
-  compe = insertarAdelante(compe,accionPrincipal)
+  compe = list(set([item for sublist in compe for item in sublist])) #Unimos las distintas extracciones y sacamos los repetidos
+  compe = insertarAdelante(compe,accionPrincipal) #Insertamos la accionPrincipal al principio(en caso de estar o no)
 
   #Filtramos por Sector e industria-> Que sean como la accionPrincipal
   accion = yf.Ticker(accionPrincipal)
@@ -42,7 +40,7 @@ for i in range(len(totalStocks)):
   industriaPrincipal = resumenPerfil["industry"]
   puntajes = puntajesStocks(compe,industriaPrincipal,sectorPrincipal)
   stocksGanadores=[]
-  #Si vemos las coincidencias-> si son muy pocas agregamos a los que se relacionan por lo menos en algunas de las dos.
+  #Si hay pocas que coinciden en los dos, les agregamos tambien aquellos que coinciden en solo uno.
   for i in range(len(compe)):
     if puntajes[i] >= 2:
       stocksGanadores.append(compe[i]) #Tendriamos que remover aquellos que vamos poniendo en compe(con su puntuacion correspondiente)-> no es tan relevante en tiempo hacer esto
@@ -56,8 +54,8 @@ for i in range(len(totalStocks)):
   print(", ".join(stocksGanadores))
 
   #termina en un stocksGanadores
-  print("TERMINO \n\n")
-  #Hasta aca queda la busqueda de competidores, ahora vamos a sacar estadisticas o modificar cosas para la visualizacion del informe.
+  print("Busqueda de competidores finalizada. \n\n")
+  #Hasta aca queda la busqueda de competidores, ahora vamos a sacar estadisticas o modificar caracteristicas para la visualizacion del informe.
 
   #Desde YahooFinance se puede ver las estadisticas de cada accion!. Aprovechemos eso para luego hacer las comparaciones en el excel/csv que crearemos.
   stocksUnicos = stocksGanadores
@@ -75,7 +73,7 @@ for i in range(len(totalStocks)):
     except:
       print("Problemas")
       break
-    for j in range(len(estadistica)): #cambiar el 30 por el len(blabla)->Como es fijo en esta parte por ahora no importa #-> #-> PRUUEBA ULTIMA SACADA range(30)
+    for j in range(len(estadistica)): 
       problemas = False
       try:
         estadisticaYvalor = ((str(infoFinanciera).split(","))[j].replace("{","").replace("}","").replace("'","").replace(" ","",2).split(":"))
@@ -84,12 +82,10 @@ for i in range(len(totalStocks)):
         valor.append(str(estadisticaYvalor[1]))
       except:
         problemas = True
-        valor.append("CHEQUEO") # EN VEZ DE "CHEQUEO" LO DEBO CAMBIAR POR CEROS
-    #Aca hay que hacer un for que se encargue de las demas columnas que son -> Price earning,Return on Sales, Days rec... y eso,deb assets levereage time interest earnid
-    #Para eso tambien debemos agregar a estadistica a estas columnas nuevas, pero esto lo tenemos que hacer fuera del for claramente->>>>>>>>
-    #PONEMOS ACCION
-    ######->>>>
+        valor.append("CHEQUEO") # En vez de chequeo seria cero (0)-> pero esta solucion si bien es fea conviene.
+
     
+    #Tomamos informacion de yahooFinance
     ticker_object = symbol #cambiamos accionPrincipal por accion #cambiamos yf.ticker(accion)->por simbol de arriba asi no gasta ese tiempo
     # get financial statements
     time.sleep(0.5)
@@ -140,7 +136,6 @@ for i in range(len(totalStocks)):
     #Formula deb assets : total debt/total ASsets
     try:
       debtToAssets = balancesheet.iloc[0:,0]["Total Debt"]/balancesheet.iloc[0:,0]["Total Assets"] #SI
-      #print("DebtToASsets:  "+str(debtToAssets))
     except:
       debtToAssets = 0 #era none
     valor.append(debtToAssets)
@@ -148,7 +143,6 @@ for i in range(len(totalStocks)):
     try:
       ownersEquity = balancesheet.iloc[0:,0]["Stockholders Equity"] ##PARECE QUE SI
       leverage = balancesheet.iloc[0:,0]["Total Assets"]/ownersEquity
-      #print("levereage:  "+str(leverage))
     except:
       ownersEquity = 0 #era none
     valor.append(leverage)
@@ -156,23 +150,20 @@ for i in range(len(totalStocks)):
     try:
       interest = financials.iloc[0:,0]["InterestExpense"] #PARECE QUE SI
       timeInterestEarned = financials.iloc[0:,0]["EBIT"]/(interest)
-      #print("timeInterestEarned:  "+str(timeInterestEarned))
     except:
       timeInterestEarned = 0 #era none
     valor.append(timeInterestEarned)
-    #####<<<<<-
 
-    #A valor hay que agregarle las otrasEstadisticas-> ya fueron agregadas atras
     allValues.append(valor)
     if problemas == True:
       print("No se pudo con "+str(accion))
   print("Estadisticas a visualizar:")
-  #<<<<<----- aca denbemos agregar a la estadistica las nuevas columnas
+  #Agregamos a la estadisticas las nuevas columnas
   estadisticasDefinidas = estadisticasDefinidas + otrasEstadisticas
   for i in estadisticasDefinidas:
     print(i,end=", ")
 
-  ##Vamos a agregar el nombre extendido de la accion principal
+  #Agregamos el nombre extendido de la accion principal
   ticker_object = yf.Ticker(accionPrincipal)
   nombre = ticker_object.info['longBusinessSummary']
   if len(nombre.split(".")[0].split(" "))>4:
@@ -183,24 +174,16 @@ for i in range(len(totalStocks)):
   else:
     nombre = nombre.split(".")[0]
   
-  ### Hacemos un dataframe con los stocks para visualizar si hay algun Noone
+  #Hacemos un dataframe con los stocks para visualizar si hay algun Noone
   dataframe2 = pd.DataFrame({"Competidor":[0],"Nombre":[0],"Stock":[0]}) #Tendria que ser, competidor, nombre competidor y stock
   dataframe2[estadisticasDefinidas] = 0
 
-  for i in range(len(allValues)): #Ponemos en el dataframe el nombre del competidor y a que competidor pertenece cada stock.
+  #Ponemos en el dataframe el nombre del competidor y a que competidor pertenece cada stock.
+  for i in range(len(allValues)): 
     allValues[i].insert(0,accionPrincipal)
     allValues[i].insert(1,nombre)
     allValues[i].insert(2,stocksUnicos[i])
     dataframe2.loc[i] = allValues[i]
-
-  #ULTIMO #ULTIMO #ULTIMO #ULTIMO Esta funcion str To num la subimos arriba en el py original
-  #Hacemos un funcion para cambiar el string que contiene un numero abreviado con un + "B" "M" o "T" a un entero
-  def strToNum(string):
-    string = str(string)
-    if "T" in string.upper(): trillon = math.pow(10,18); return float(string.split("T")[0])*trillon
-    if "B" in string.upper(): billon = math.pow(10,9); return float(string.split("B")[0])*billon
-    if "M" in string.upper(): millon = math.pow(10,6); return float(string.split("M")[0])*millon
-    return string
 
   ## Como se aclaro antes, hay veces que yahoofinance no te tira el marketcap para ciertos stocks en la primera pasada:
   # 1) Para resolver esto, si yahoo finance no tiene los datos, los sacamos de la pagina que mencionamos en la funcion anterior.
@@ -229,7 +212,7 @@ for i in range(len(totalStocks)):
     except:
       marketCap.append("CHEQUEO") ## Luego revisar todas las lineas que tienen ("CHEQUEO")
 
-  #marketCapo ordenado y los respectivos nombres (Revisar si se puede sacar, ya que luego ordeno el dataframe por la columna marketCap y queda igual)
+  #marketCapo ordenado y los respectivos nombre.
   marketCapOrdenado.sort(reverse=True)
   marketCapTop  = [] 
   marketCapTopNombres = [] 
@@ -238,31 +221,27 @@ for i in range(len(totalStocks)):
     marketCapTopNombres.append(marketCapOrdenado[i][1])
   print(str(marketCapTop)+"<->"+str(marketCapTopNombres))
 
-
   #Agrego marketcap al dataframe->#Esta parte puede traer errores? deberia poner otra cosa en except? fijarse
   try:
     dataframe2.insert(3,"MarketCap",marketCapAsecas)
   except:
     continue
 
-  dataframe2[otrasEstadisticas+["debtToEquity"]] = dataframe2[otrasEstadisticas+["debtToEquity"]].fillna(0) #VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER#VER
+  dataframe2[otrasEstadisticas+["debtToEquity"]] = dataframe2[otrasEstadisticas+["debtToEquity"]].fillna(0) 
   #Guardamos para ver como quedo
-  dataframe2Renovado = dataframe2 #BORRAR DATAFRAME2RENOVADO y dejar dataframe2 cambiandolo de las filas que siguen #BORRAR DATAFRAME2RENOVADO#BORRAR DATAFRAME2RENOVADO#BORRAR DATAFRAME2RENOVADO
-  #dataframe2Renovado.to_csv("Competidores"+str(accionPrincipal)+".csv",index=False) # Creado para ell google data studio #Vamos a llamarlo solamente competidores despues, esto es prueba de poner competidores de "blabla"
-
-  # ACA VA A ESTAR EL EXCEL CON TODAS LAS EMPREsAS Y COMPETIDORES TODAS JUNTAS ESTE ES PARA EL GOOGLE DATA STUDIO 
-  # VER SI ESTA BIEN ESTO DE ABAJO DE LOS TRY EXCEPT
+  dataframe2Renovado = dataframe2 # Lo dejo asi porque luego cambie el nombre del dataframe a este.
+ 
   try:
     dfCompetidores = pd.read_csv("Competidores.csv")
   except:
     dfCompetidores = pd.DataFrame()
 
-  #Hay que modificar estas 4 lineas para que siempre se tome a la fila donde esta la accion principal
+  #Tomamos la fila del stockPrincipal para reinsertarla al principio luego de ordenar por marketCap el dataframe
   accionprincipalFila = dataframe2Renovado.drop(dataframe2Renovado.index[1:])
   dataframe2Renovado = dataframe2Renovado.drop(dataframe2Renovado.index[0])
-  dataframe2Renovado = dataframe2Renovado.sort_values(by='MarketCap', ascending=False) #aca ordeno por marketcap->de aca me fijo las cosas
+  dataframe2Renovado = dataframe2Renovado.sort_values(by='MarketCap', ascending=False) 
   dataframe2Renovado = pd.concat([accionprincipalFila,dataframe2Renovado]).reset_index(drop=True)
-
+  #Este de abajo es importante, se puede reducir aun mas la cantidad de acciones que tomamos en su orden por el marketCap!.
   dataframe2Renovado = dataframe2Renovado.head(15) ##Vamos a dejar los primeros 15 que mas marketCap tienen->Me parece que tiene mas sentido y los graficos se van a ver mas
 
   try:
@@ -271,11 +250,10 @@ for i in range(len(totalStocks)):
     dfCompetidores = dataframe2Renovado
     
   dfCompetidores = dfCompetidores.replace("None",0) #lo deberia hacer antes esto, no aca, porque aca agrra a todos
-  #dfCompetidores.replace(to_replace="None",value=0) #Quizas sacarlo
   dfCompetidores.to_csv("Competidores.csv",index = False)
-  #dfCompetidores.to_csv("Competidores"+str(datetime.datetime.now())+".csv",index = False) #esto agregarlo luego al igual que abajo, de todas formas fijar
+  #Habra que guardar de una forma diferente el competidores.csv, asi tenemos en cuenta al dataframe viejo, es decir el anterior!
 
-  #clear_output()
+  clear_output()
   print(str(i)+"/"+str(len(totalStocks))) #Esto no funciona como deberia porque hay muchos i-> lo soluciono luego
 
 print("AHORA LAS OCUPACIONES")
@@ -343,9 +321,8 @@ dataEyO['Ocupacion'] = dataEyO['Ocupacion'].str.replace(',', '-')
 dataEyO
 dataEyO.to_csv("Ocupaciones.csv",sep=",",index=False)
 
-
-## Por ultimo Buscaremos el PTFCF de los 4 primeros stocks con mas marketCap
-# y luego guardamos esta info en un .csv
+## Por ultimo Buscaremos el PTFCF de los 4 primeros stocks con mas marketCap.
+#Luego guardamos esta info en Ocupaciones.csv
 from datetime import datetime
 df = pd.read_csv("Competidores.csv")
 competidores = list(set(df["Competidor"]))
@@ -390,7 +367,7 @@ for h in range(len(competidores)):
           FreeCashflowReal.append(FreeCashflowAnioStock[i])
           continue
 
-    #hacer variable tiempo real
+    #Hacer variable tiempo real
     for i in range(len(tiempoReal)):
       for j in range(len(marketCapYear)):
         if(tiempoReal[i]==marketCapYear[j][0]):
