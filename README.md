@@ -20,7 +20,7 @@ Con este trabajo realizado en Python y Data Studio, lo que se busca es, identifi
 ![](https://i.ibb.co/ww3PsJP/competidores-foto2.png)
 
 
-- ** Insiders transactions**
+- **Insiders transactions**
 
 ![](https://i.ibb.co/p3ww77L/insider-foto1.png)
 
@@ -48,7 +48,7 @@ Con este trabajo realizado en Python y Data Studio, lo que se busca es, identifi
 
 - **marketCapFunc(stock,ultimosNanios)**: Recibe un stock y una cantidad n de años y devuelve una lista del marketCap de los ultimos n años.
 
-** Insiders:**
+**Insiders:**
 
 -  ** insiderTraders(stocksCargados,diasAtras)**: Recibe stock/s y una cantidad n de dias, y genera dos archivos csv de los cuales uno tiene los precios historicos de la accion a analizar en un rango de n dias; Y el otro tiene informacion de los insider traders, de las compras y ventas de sus acciones con sus fechas correspondientes, sus puestos.
 
