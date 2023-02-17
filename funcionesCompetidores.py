@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from selenium.common.exceptions import WebDriverException
 import requests
+import sys
 #
 import yfinance as yf
 import yahoo_fin.stock_info as si

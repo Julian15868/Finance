@@ -3,11 +3,26 @@ from funcionesCompetidores import *
 
 ### Codigo real ###
 ## Cargamos el dataframe
-data = pd.read_csv("stocks1.csv") 
-totalStocks = list(data["Symbol"]) 
-totalStocks = ["FLWS"] #Para probar
+try:
+  filename = sys.argv[1]
+  if ".csv" in filename:
+    data = str(pd.read_csv(filename)).replace("[","").replace("]","").replace(" ","").split(":")[1].split("\n")[0].split(",")
+    print(data)
+  else:
+    data = filename.split(",")
+    print(data)
+except:
+  data = pd.concat([pd.read_csv("stocks1.csv"),pd.read_csv("stocks2.csv")])
+  data = list(data["Symbol"])
+
+
+
+totalStocks = data 
+
+#totalStocks = ["FLWS"] #Para probar
 print("Stocks a analizar: " + str(totalStocks))
 mercados = ["NASDAQ","NYSE"]
+
 
 #Este codigo estaba en el ciclo pero lo sacamos para ahorrar un poco de tiempo
 #El codigo agarra el nombre de unas estadisticas, para eso usamos un stock conocido->Meli ejemplo.

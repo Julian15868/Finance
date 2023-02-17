@@ -24,12 +24,20 @@ options.add_argument('--disable-dev-shm-usage')
 #Cargamos el dataframe 
 try:
   filename = sys.argv[1]
-  Dataframe = pd.read_csv(filename)
+  if ".csv" in filename:
+    lista = str(pd.read_csv(filename)).replace("[","").replace("]","").replace(" ","").split(":")[1].split("\n")[0].split(",")
+    print(lista)
+  else:
+    lista = filename.split(",")
+    print(lista)
 except:
   Dataframe = pd.concat([pd.read_csv("stocks1.csv"),pd.read_csv("stocks2.csv")])
-  
-#Dataframe = pd.read_csv('stocks1.csv') #-> Hay que actualizar este por el que tiene 0 recomendaciones que tenemos guardado
-stocksTotales = list(Dataframe["Symbol"].head(100)) #Sacar el head luego
+
+try:
+  stocksTotales = list(Dataframe["Symbol"].head(10)) #Sacar el head luego
+except:
+  stocksTotales = lista
+
 print("El largo del stocksTotales es: "+str(len(stocksTotales)))
 print(stocksTotales,end=",")
 
@@ -214,10 +222,11 @@ def insiderTraders(stocksCargados,diasAtras):
 # Deshabilitar las advertencias para pandas
 pd.options.mode.chained_assignment = None
 #
-stocksCargados = ["MELI","AMZN","TSLA","ASTL","ACU","AZPN","ARCH","CMRX"] #De prueba son
+
+#stocksCargados = lista
 diasAtras = 180
 #Vamos a poner casi mil de stocksTotales, en vez de stocksCargados
-insiderTraders(stocksCargados,diasAtras) ##cambiar
+insiderTraders(stocksTotales,diasAtras) ##cambiar
 #
 # Volver a habilitar las advertenciasde pandas
 pd.options.mode.chained_assignment = 'warn'
