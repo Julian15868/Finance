@@ -1,21 +1,21 @@
-# Trabajo de finanzas
+# Finance work
 #### Intro:
-Con este trabajo realizado en Python y Data Studio, lo que se busca es, identificar stocks con posibles crecimientos en el futuro, comparar cada stocks con su competencia dado diferentes metricas competitivas, y ver las transacciones de las propias acciones que hacen las personas que estan dentro de la empresa para estar al tanto de como preven su valor futuro.
+With this work done in Python and Data Studio, the goal is to identify stocks with possible future growth, compare each stock with its competitors using different competitive metrics, and see the transactions of the company's own stocks made by people within the company to stay informed on how they anticipate their future value.
 
 ------------
 
 #### **Este trabajo se divide en los siguientes tres programas:**
 
-- **Competidores** : Se busca para cada uno de los stocks de una lista, sus competidores, filtrados y ordenados por su market capitalization. Terminada esta busqueda se busca informacion, ratios para compararlos, entre ellos estan: Price/Earnings,  Free cashflow, PTFCF, Profitability ratios, Activity ratios,Liquidity ratios,Debt ratios. Como ultimo se da una descripcion de la empresa.
+- **Competidores** : For each stock on a given list, we aim to find their competitors, filtered and sorted by their market capitalization. Once this search is complete, we look for information and ratios to compare them, including: Price/Earnings, Free Cashflow, PTFCF, Profitability Ratios, Activity Ratios, Liquidity Ratios, and Debt Ratios. Finally, a description of the company is provided.
 
-- **Insiders** : Para cada uno de los stocks queremos saber que es lo que hacen con sus propias acciones las personas que estan dentro de la empresa, entonces teniendo esta informacion junto con el cargo de aquellos, con las fechas de las transacciones, las cantidades y demas, las comparamos con el precio historico de la accion en una cierta cantidad de dias. Con esto buscamos preveer que pasara en el futuro con la accion. Por ejemplo: Si dado un momento ellos empiezan a comprar una cantidad apreciable de acciones a la vez, piensan que el valor de su stock en el mercado va a subir.
+- **Insiders** : For each stock, we want to know what people within the company are doing with their own stocks. With this information, along with their job titles, transaction dates, amounts, and other details, we compare it with the historical price of the stock over a certain number of days. The goal is to predict what will happen in the future with the stock. For example, if they start buying a significant amount of shares at once, it suggests they believe the value of their stock in the market will increase.
 
-- **accionesBaratas**: Usamos este programa para identificar stocks que estan baratos dado una lista de ellos, y lo hacemos por Sector, Industria y Subindustria, teniendo en cuenta el orden, por un lado por el Price to book y por otro, el Price/Earnings.
+- **accionesBaratas**: We use this program to identify stocks that are cheap given a list of them, and we do so by sector, industry, and sub-industry, taking into account the order, on one hand, by Price-to-Book and on the other, by Price/Earnings.
 
 ------------
-#### **A modo de ejemplo mostramos imagenes de cada uno:**
+#### **As an example we show images of each one**
 - **Competidores**: 
-(Algunas secciones del informe)
+(Some sections of the report)
 
 ![](https://i.ibb.co/8bFgtQN/competidores-foto1.png)
 
@@ -32,28 +32,42 @@ Con este trabajo realizado en Python y Data Studio, lo que se busca es, identifi
 
 ------------
 
-#### **Aqui se encuentra una descripcion de las funciones de cada programa:**
+#### **Here is a description of the functions of each program:**
 
  **Competidores** :
  
-- **insertarAdelante(lista,elemento)** : Recibe una lista y un elemento, si en la lista ya se encontraba este, lo borra para ingresarlo al principio, y si no estaba lo ingresa al principio. Es importante en el contexto de nuestro programa de competidores para dejar al stockPrincipal siempre al principio de la lista.
+- **insertarAdelante(lista,elemento)** : It receives a list and an element, if it was already in the list, it deletes it to enter it at the beginning, and if it wasn't, it enters it at the beginning. It is important in the context of our competition program to always leave the Principalstock at the top of the list.
 
-- **buscarPrimeraTandaCompetencia(accion)**: Busca la primera tanda de competidores de la accion que ingresamos. Se utiliza esta para buscar la primera tanda y no las siguientes porque: Es mas variada y acertada en la primera busqueda de la competencia que la funcion "buscarCompetencia(accion,mercados)", pero no es muy buena para buscar las siguientes tandas, tiene poca variacion.
+- **buscarPrimeraTandaCompetencia(accion)**: It searches for the first batch of competitors for the stock we enter. We use this to search for the first batch and not subsequent ones because it is more varied and accurate in the first search for the competition than the function "buscarCompetencia(accion,mercados)" but it is not very good at searching for subsequent batches because it has little variation.
 
-- **buscarCompetencia(accion,mercados)**: Busca las tandas siguientes de competidores de la accion, y ponemos los mercados que queremos que busque nuestra funcion.
+- **buscarCompetencia(accion,mercados)**: It searches for subsequent batches of competitors for the stock, and we specify the markets that we want our function to search.
 
-- **puntajesStocks(stocksTotales)**: Teniendo en cuenta el sector e industria de la accion Principal le vamos sumando 1("uno") al puntaje del stock competidor por cada coincidencia.
+- **puntajesStocks(stocksTotales)**: Taking into account the sector and industry of the main stock, we add 1 ("one") to the competitor stock's score for each match.
 
-- **strToNum(string)**: Se recibe la informacion del valor del marketCap(u otros) como string, es decir del estilo 1T(un trillon), 1B(un billon).. lo pasamos a numero para poder comparar cada stock luego.
+- **strToNum(string)**: We receive information about the value of market cap (or others) as a string, such as 1T (one trillion) or 1B (one billion). We convert this to a number to compare each stock later.
 
-- **separarMayus(palabra)**: Recibe un string del estilo "ReturnOnAssets" y lo convertimos en "Return On Assets". Usamos esta funcion para clarificar los nombres de las columnas en un dataframe.
+- **separarMayus(palabra)**: It receives a string in the format "ReturnOnAssets" and converts it to "Return On Assets". We use this function to clarify column names in a dataframe.
 
-- **marketCapFunc(stock,ultimosNanios)**: Recibe un stock y una cantidad n de años y devuelve una lista del marketCap de los ultimos n años.
+- **marketCapFunc(stock,ultimosNanios)**: It receives a stock and a number of years, and returns a list of the market cap for the last n years.
 
 **Insiders:**
 
--  **insiderTraders(stocksCargados,diasAtras)**: Recibe stock/s y una cantidad n de dias, y genera dos archivos csv de los cuales uno tiene los precios historicos de la accion a analizar en un rango de n dias; Y el otro tiene informacion de los insider traders, de las compras y ventas de sus acciones con sus fechas correspondientes, sus puestos.
+-  **insiderTraders(stocksCargados,diasAtras)**: It receives one or more stocks and a number of days, and generates two CSV files. One file contains the historical prices of the stock to be analyzed within a range of n days, and the other contains information on insider traders, including their purchase and sale of shares with corresponding dates and job titles.
 
--  **masProbable(nombre1,lista)**: Recibe un nombre y una lista de nombres. Y dado este nombre vamos a devolver cual es el nombre mas parecido a el de la lista, si la probabilidad es baja devuelve un "No Match". Comentario aparte: Utilizamos esta funcion debido a que tenemos que triangular informacion de dos paginas, esta informacion la triangulamos con el nombre, mas especificamente queremos a partir del nombre podamos agregar la informacion del puesto de la persona en la empresa.
+-  **masProbable(nombre1,lista)**: It receives a name and a list of names. Given this name, we return the name that is the closest match to the list. If the probability is low, it returns "No Match". We use this function because we need to triangulate information from two different pages. We triangulate this information using the name, specifically, we want to use the name to add information about the person's job title in the company.
+
+------------
+
+**Code execution**
+
+Each of these programs can be run by uploading a .csv file with the same name and analogous structure, or by updating the same file to the current date and time, i.e.:
+- python program.py
+
+For competidores and insiders, there are two options. The first option is to upload a .csv file containing the information inside of it, in the format "NFLX, TSLA, CMRX". The second option is to provide the information directly in the command line:
+
+- python program.py file.csv
+- python program.py "NFLX, TSLA, CMRX"
+
+For the accionesBaratas program, only a dataframe containing the following columns ("Symbol", "Sector", "Industry", "Same Sub-Industry As", "Market Capitalization", "Price/Book (MRQ)", "Price/Earnings (TTM)") can be passed. In other words, the dataframe should have the same structure as the original .csv file.
 
 ------------
