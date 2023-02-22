@@ -4,7 +4,7 @@ With this work done in Python and Data Studio, the goal is to identify stocks wi
 
 ------------
 
-#### **Este trabajo se divide en los siguientes tres programas:**
+#### **This work is divided into the following three programs:**
 
 - **Competidores** : For each stock on a given list, we aim to find their competitors, filtered and sorted by their market capitalization. Once this search is complete, we look for information and ratios to compare them, including: Price/Earnings, Free Cashflow, PTFCF, Profitability Ratios, Activity Ratios, Liquidity Ratios, and Debt Ratios. Finally, a description of the company is provided.
 
