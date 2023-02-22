@@ -18,18 +18,16 @@ With this work done in Python and Data Studio, the goal is to identify stocks wi
 (Some sections of the report)
 
 <img src="https://i.ibb.co/8bFgtQN/competidores-foto1.png" width="750" height="525">
-![](https://i.ibb.co/8bFgtQN/competidores-foto1.png)
-<img src="https://i.ibb.co/ww3PsJP/competidores-foto2.png" width="750" height="525">
-![](https://i.ibb.co/ww3PsJP/competidores-foto2.png)
 
+<img src="https://i.ibb.co/ww3PsJP/competidores-foto2.png" width="750" height="525">
 
 - **Insiders transactions**
 
-![](https://i.ibb.co/p3ww77L/insider-foto1.png)
+<img src="https://i.ibb.co/p3ww77L/insider-foto1.png" width="750" height="525">
+
 
 - **accionesBaratas**
-
-![](https://i.ibb.co/xSSwH6h/accionesbaratas-foto1.png)
+<img src="https://i.ibb.co/xSSwH6h/accionesbaratas-foto1.png" width="750" height="525">
 
 ------------
 
