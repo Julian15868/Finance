@@ -82,3 +82,13 @@ For the accionesBaratas program, only a dataframe containing the following colum
     ```ShellSession
     pip install -r requirements.txt
     ```
+------------
+
+### next steps after the execution of our programs
+
+-after "competidores.py":
+
+-after "insiders.py":
+
+-after accionesBaratas.py:
+
