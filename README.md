@@ -19,7 +19,7 @@ With this work done in Python and Data Studio, the goal is to identify stocks wi
 
 <img src="https://i.ibb.co/8bFgtQN/competidores-foto1.png" width="750" height="525">
 ![](https://i.ibb.co/8bFgtQN/competidores-foto1.png)
-<img src="[https://i.ibb.co/8bFgtQN/competidores-foto1.png](https://i.ibb.co/ww3PsJP/competidores-foto2.png)" width="750" height="525">
+<img src="https://i.ibb.co/ww3PsJP/competidores-foto2.png" width="750" height="525">
 ![](https://i.ibb.co/ww3PsJP/competidores-foto2.png)
 
 
