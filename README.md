@@ -17,7 +17,7 @@ With this work done in Python and Data Studio, the goal is to identify stocks wi
 - **Competidores**: 
 (Some sections of the report)
 
-![Texto alternativo de la imagen](https://i.ibb.co/8bFgtQN/competidores-foto1.png){ width=50% }
+![Texto alternativo de la imagen](https://i.ibb.co/8bFgtQN/competidores-foto1.png){ width=25% }
 <img src="https://i.ibb.co/8bFgtQN/competidores-foto1.png" width="750" height="525">
 
 <img src="https://i.ibb.co/ww3PsJP/competidores-foto2.png" width="750" height="525">
