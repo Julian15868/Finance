@@ -61,16 +61,25 @@ With this work done in Python and Data Studio, the goal is to identify stocks wi
 **Running the code**
 
 Each of these programs can be run by uploading a .csv file with the same name and analogous structure, or by updating the same file to the current date and time, i.e.:
-- python program.py
+```ShellSession
+python program.py
+```
 
 For competidores and insiders, there are two options. The first option is to upload a .csv file containing the information inside of it, in the format "NFLX, TSLA, CMRX". The second option is to provide the information directly in the command line:
 ```ShellSession
-- python program.py file.csv
+python program.py file.csv
 ```
 ```ShellSession
-- python program.py "NFLX, TSLA, CMRX"
+python program.py "NFLX, TSLA, CMRX"
 ```
 
 For the accionesBaratas program, only a dataframe containing the following columns ("Symbol", "Sector", "Industry", "Same Sub-Industry As", "Market Capitalization", "Price/Book (MRQ)", "Price/Earnings (TTM)") can be passed. In other words, the dataframe should have the same structure as the original .csv file.
 
 ------------
+
+### Python Requirements <a name = "pyinstalling"></a>
+
+1. Now you need to create environment and install the required python packages:
+    ```ShellSession
+    pip install -r requirements.txt
+    ```
