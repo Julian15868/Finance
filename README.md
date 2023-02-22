@@ -86,9 +86,9 @@ For the accionesBaratas program, only a dataframe containing the following colum
 
 ### next steps after the execution of our programs
 
--after "competidores.py":
+- after execution of "competidores.py": Nos devuelve tres .csv, el primero se llama "ocupaciones.csv"(proximamente occupations), se debera poner en el rectangulo de arriba de **profitability ratios**, el segundo "competidoresPtfc.csv"(proximanete competitorsPtfc) ira en el grafico de abajo del texto "stocks to analyze" y en el grafico de abajo donde se encuentra el texto "Price to Free CashFlow(top4)", estos dos se encuentran entre los primeros graficos a la derecha; luego en todos los demas graficos/controles(son 16) ira "competidores.csv" (proximamente competitors.csv).
 
--after "insiders.py":
+- after execution of "insiders.py": Nos devuelve dos .csv, el primero se llama "preciosHist.csv"(proximamente histPrices), se debera poner en el primer grafico temporal (arriba izquierda), luego en todos los demas graficos/controles(son 11) ira "insiders.csv".
 
--after accionesBaratas.py:
+- after execution of accionesBaratas.py: Nos devuelve dos .csv, el primero se llama "priceToBook" que ira en los graficos de la primera columna, y luego "priceEarnings" que ira en los graficos de la segunda columna (sus nombres corresponden al texto que tienen arriba).
 
