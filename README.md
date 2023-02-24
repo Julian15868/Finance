@@ -90,11 +90,9 @@ For the accionesBaratas program, only a dataframe containing the following colum
 
 &nbsp;&nbsp;Nos devuelve tres archivos.csv: 
 
--El primero de ellos CompetidoresPtfc.csv se ubicara en el menu desplegable abajo del texto stocks to analize, y en el grafico debajo del texto price To Free CashFlow (top4),  estos dos se encuentran al principio del reporte, arriba a la derecha.
-
--El segundo ocupaciones.csv, se ubicara en el grafico rectangular, arriba de la seccion Profitability ratios.
-
--El tercero competidores.csv se ubicara en todos los demas graficos/menús (Son 16 todos los demas)
+- El primero de ellos CompetidoresPtfc.csv se ubicara en el menu desplegable abajo del texto stocks to analize, y en el grafico debajo del texto price To Free CashFlow (top4),  estos dos se encuentran al principio del reporte, arriba a la derecha.
+- El segundo ocupaciones.csv, se ubicara en el grafico rectangular, arriba de la seccion Profitability ratios.
+- El tercero competidores.csv se ubicara en todos los demas graficos/menús (Son 16 todos los demas)
 Enlace al reporte: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-a9df-4143bd89cdf7
 
 
