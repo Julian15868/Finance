@@ -96,7 +96,7 @@ For the accionesBaratas program, only a dataframe containing the following colum
 Enlace al reporte: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-a9df-4143bd89cdf7
 
 
-- After execution of "insiders.py":
+- \_After execution of "insiders.py"\_:
 
 &nbsp;&nbsp;Nos devuelve dos archivos.csv: 
 
