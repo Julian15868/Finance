@@ -93,7 +93,8 @@ For the accionesBaratas program, only a dataframe containing the following colum
 - El primero de ellos CompetidoresPtfc.csv se ubicara en el menu desplegable abajo del texto **stocks to analize**, y en el grafico debajo del texto **price To Free CashFlow (top4)**,  estos dos se encuentran al principio del reporte, arriba a la derecha.
 - El segundo ocupaciones.csv, se ubicara en el grafico rectangular, arriba de la seccion **Profitability ratios**.
 - El tercero competidores.csv se ubicara en todos los demas graficos/menús (Son 16 todos los demas)
-Enlace al reporte: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-a9df-4143bd89cdf7
+
+**Enlace al reporte**: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-a9df-4143bd89cdf7
 
 
 **After execution of "insiders.py"** :
@@ -102,7 +103,8 @@ Enlace al reporte: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-
 
 - El primero de ellos preciosHist.csv se ubicara en el primer grafico de arriba a la izquierda (dentro del mismo se encuentra el texto **Historical prices**).
 - El segundo insidersInfo.csv, que se ubicara en todos los graficos/menús restantes(Son 11)
-Enlace al reporte: https://lookerstudio.google.com/reporting/c0b4bd5e-cdf0-4671-a5a1-a093f8b0d6a7
+
+**Enlace al reporte**: https://lookerstudio.google.com/reporting/c0b4bd5e-cdf0-4671-a5a1-a093f8b0d6a7
 
 **After execution of accionesBaratas.py**:
 
@@ -110,4 +112,5 @@ Enlace al reporte: https://lookerstudio.google.com/reporting/c0b4bd5e-cdf0-4671-
 
 - El primero de ellos priceToBook.csv se ubicara en la primera columna de graficos, abajo de **Ordered by Price To Book**.
 - El segundo PriceEarnings.csv se ubicara en la segunda columna de graficos, abajo de **Ordered by Price/Earnings**.
-Enlace al reporte: https://lookerstudio.google.com/reporting/e25be8c8-f2f4-4241-9bd9-b2ff4a3f11de
+
+**Enlace al reporte**: https://lookerstudio.google.com/reporting/e25be8c8-f2f4-4241-9bd9-b2ff4a3f11de
