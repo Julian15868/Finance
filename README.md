@@ -84,9 +84,9 @@ For the accionesBaratas program, only a dataframe containing the following colum
     ```
 ------------
 
-### next steps after the execution of our programs
+### Next steps after the execution of our programs
 
-- After execution of "competidores.py":
+**After execution of "competidores.py"**:
 
 &nbsp;&nbsp;Nos devuelve tres archivos.csv: 
 
@@ -96,7 +96,7 @@ For the accionesBaratas program, only a dataframe containing the following colum
 Enlace al reporte: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-a9df-4143bd89cdf7
 
 
-- \_ After execution of "insiders.py" \_:
+**After execution of "insiders.py"** :
 
 &nbsp;&nbsp;Nos devuelve dos archivos.csv: 
 
@@ -104,7 +104,7 @@ Enlace al reporte: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-
 - El segundo insidersInfo.csv, que se ubicara en todos los graficos/menús restantes(Son 11)
 Enlace al reporte: https://lookerstudio.google.com/reporting/c0b4bd5e-cdf0-4671-a5a1-a093f8b0d6a7
 
-- After execution of accionesBaratas.py:
+**After execution of accionesBaratas.py**:
 
 &nbsp;&nbsp;Nos devuelve dos archivos.csv: 
 
