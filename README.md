@@ -26,6 +26,8 @@ With this work done in Python and Data Studio, the goal is to identify stocks wi
 <img src="https://i.ibb.co/p3ww77L/insider-foto1.png" width="750" height="525">
 
 
+
+
 - **accionesBaratas**
 <img src="https://i.ibb.co/xSSwH6h/accionesbaratas-foto1.png" width="750" height="525">
 
