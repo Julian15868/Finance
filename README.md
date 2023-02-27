@@ -90,29 +90,29 @@ For the accionesBaratas program, only a dataframe containing the following colum
 
 **After execution of "competidores.py"**:
 
-&nbsp;&nbsp;Nos devuelve tres archivos.csv: 
+&nbsp;&nbsp;We will get three .csv files:
 
-- El primero de ellos CompetidoresPtfc.csv se ubicara en el menu desplegable abajo del texto **stocks to analize**, y en el grafico debajo del texto **price To Free CashFlow (top4)**,  estos dos se encuentran al principio del reporte, arriba a la derecha.
-- El segundo ocupaciones.csv, se ubicara en el grafico rectangular, arriba de la seccion **Profitability ratios**.
-- El tercero competidores.csv se ubicara en todos los demas graficos/menús (Son 16 todos los demas)
+- The first one, CompetidoresPtfc.csv, will be located in the dropdown menu below the text "stocks to analyze," and in the chart below the text "price to free cash flow (top4)," both of which are at the beginning of the report, at the top right.
+- The second one, ocupaciones.csv, will be located in the rectangular chart above the "profitability ratios" section.
+- The third one, competidores.csv, will be located in all other charts/menus (there are 16 other ones).
 
-*Enlace al reporte*: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-a9df-4143bd89cdf7
+*Link to the report*: https://lookerstudio.google.com/reporting/d8c8ffaf-b0e0-419e-a9df-4143bd89cdf7
 
 
 **After execution of "insiders.py"** :
 
-&nbsp;&nbsp;Nos devuelve dos archivos.csv: 
+&nbsp;&nbsp; We will get two .csv files: 
 
-- El primero de ellos preciosHist.csv se ubicara en el primer grafico de arriba a la izquierda (dentro del mismo se encuentra el texto **Historical prices**).
-- El segundo insidersInfo.csv, que se ubicara en todos los graficos/menús restantes(Son 11)
+- The first one, preciosHist.csv, will be located in the top-left chart (within which is the text **historical prices**).
+- The second one, insidersInfo.csv, will be located in all other charts/menus (there are 11 other ones).
 
-*Enlace al reporte*: https://lookerstudio.google.com/reporting/c0b4bd5e-cdf0-4671-a5a1-a093f8b0d6a7
+*Link to the report:*: https://lookerstudio.google.com/reporting/c0b4bd5e-cdf0-4671-a5a1-a093f8b0d6a7
 
 **After execution of accionesBaratas.py**:
 
-&nbsp;&nbsp;Nos devuelve dos archivos.csv: 
+&nbsp;&nbsp;We will get two .csv files: 
 
-- El primero de ellos priceToBook.csv se ubicara en la primera columna de graficos, abajo de **Ordered by Price To Book**.
-- El segundo PriceEarnings.csv se ubicara en la segunda columna de graficos, abajo de **Ordered by Price/Earnings**.
+- The first one, priceToBook.csv, will be located in the first column of charts, below **ordered by price to book**.
+- The second one, PriceEarnings.csv, will be located in the second column of charts, below **ordered by price/earnings**.
 
-*Enlace al reporte*: https://lookerstudio.google.com/reporting/e25be8c8-f2f4-4241-9bd9-b2ff4a3f11de
+*Link to the report:*: https://lookerstudio.google.com/reporting/e25be8c8-f2f4-4241-9bd9-b2ff4a3f11de
