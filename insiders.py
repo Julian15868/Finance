@@ -21,9 +21,18 @@ options.add_argument("--headless")
 options.add_argument("--no-sandbox")
 options.add_argument('--disable-dev-shm-usage')
 clear_output()
-import finnhub
-# Setup client
-finnhub_client = finnhub.Client(api_key="cee6jviad3i92cealk5gcee6jviad3i92cealk60")
+"""
+link = "https://www.wsj.com/market-data/quotes/PINE/company-people"
+texto = []
+driver = webdriver.Chrome(service=service, options=options)
+driver.get(link)
+page = BeautifulSoup(driver.page_source,"html.parser")
+nombreExtendido = page.find("span",attrs={"class":"hdr_co_name"})
+clear_output()
+print("El texto es:")
+print(nombreExtendido.text)
+"""
+
 
 ### Comienzo ###
 #Cargamos el dataframe 
@@ -57,12 +66,12 @@ try:
   elif filename2.isnumeric():
     diasAtras = int(filename2)
 except:
-  diasAtras = 360
+  diasAtras = 180
 
 print("dias atras: "+str(diasAtras))
 
 try:
-  stocksTotales = list(Dataframe["Symbol"].head(200)) #Sacar el head 100 luego#Sacar el head 100 luego#Sacar el head 100 luego#Sacar el head 100 luego#Sacar el head 100 luego
+  stocksTotales = list(Dataframe["Symbol"].head(100)) #Sacar el head 100 luego#Sacar el head 100 luego#Sacar el head 100 luego#Sacar el head 100 luego#Sacar el head 100 luego
 except:
   stocksTotales = lista
 
@@ -73,8 +82,6 @@ print(stocksTotales,end=",")
 ##Hacemos la funcion para buscar los insider traders
 #Para no sobrecargar finhub(Pagina donde sacamos los datos de insiders traders)...
 #...Se debe hacer que cada 50 stocks frene unos 5-10 segundos.
-
-
 def insiderTraders(stocksCargados,diasAtras):
   diasEmpiezo = 0
   hoy = date.today()-timedelta(diasEmpiezo,0,0) #se puede tomar otro dia como "hoy", no lo puse como parametro de la funcion porque no se si se usara
@@ -89,74 +96,66 @@ def insiderTraders(stocksCargados,diasAtras):
     print("Generando datos de "+str(stock)+" para la fecha:  "+str(ultimosNdias)+"-"+str(hoy))
 
     ####Sacamos informacion de insider transactions para el stock actual
+    r = requests.get('https://finnhub.io/api/v1/stock/insider-transactions?symbol='+stock+'&token=cee6jviad3i92cealk5gcee6jviad3i92cealk60') #(30 calls per second limit: https://finnhub.io/docs/api/rate-limit).
+    test = json.loads(r.text) # cargamos el JSON file como string.
     try:
-      r = finnhub_client.stock_insider_transactions(stock, ultimosNdias, hoy)
-      df = pd.DataFrame(r["data"])
+      df = pd.DataFrame(data=test['data'])
     except:
-      continue;
-
+      for variable in (cantComprasTodos,montComprasTodos,cantVentasTodos,montVentasTodos):
+        variable.append(0)
     # atributos derivados de los datos
     try:
-        df['dollarAmount'] = df['change']*df['transactionPrice']
+      df['dollarAmount'] = df['change']*df['transactionPrice']
     except:
-        df['dollarAmount'] = 0
-
+      df['dollarAmount'] = 0
     try:
-        df['insiderPortfolioChange'] = df['change']/(df['share'] - df['change'])
-        df.loc[df['share'] - df['change'] == 0, "insiderPortfolioChange"] = 1
+      df['insiderPortfolioChange'] = df['change']/(df['share'] - df['change'])
     except:
-        df['insiderPortfolioChange'] = 0
-
+      df['insiderPortfolioChange'] = 0
     try:
-        conditions = [
-            (df['change'] >= 0) & (df['transactionPrice'] > 0),
-            (df['change'] <= 0) & (df['transactionPrice'] > 0),
-            (df['transactionPrice'] == 0)
-        ]
+      conditions = [
+          (df['change'] >= 0) & (df['transactionPrice'] > 0),
+          (df['change'] <= 0) & (df['transactionPrice'] > 0),
+          (df['transactionPrice'] == 0)
+      ]
     except:
-        conditions = []
+      conditions = []
     values = ['Buy', 'Sale', 'Gift']
     try:
-        df['buyOrSale'] = np.select(conditions, values)
+      df['buyOrSale'] = np.select(conditions, values)
     except:
-        df['buyOrSale'] = 0
+      df['buyOrSale'] = 0
     try:
-        df['transactionDate'] = pd.to_datetime(df['transactionDate']).dt.date
+      df['transactionDate'] = pd.to_datetime(df['transactionDate']).dt.date
     except:
-        df['transactionDate'] = 0
+      df['transactionDate'] = 0
+    dfUltimosNdias = df[(df['transactionDate'] >= ultimosNdias) & (df['transactionDate'] <= hoy)] #Filtramos por el rango de fecha elegido
 
-    dfUltimosNdias = df.copy()
-    #dfBuyOrSale = dfUltimosNdias[(dfUltimosNdias["buyOrSale"] == "Buy") | (dfUltimosNdias["buyOrSale"] == "Sale")]
-    #dfBuyOrSale.to_csv("insidersInfo.csv",index=False,sep = ",")
-    
     ## Queremos añadirle el cargo de la persona al dataframe de insider transactions
     # Para eso vamos a sacar algunos datos de sec.gov (el CIK de un stock particular), y triangular la informacion (En nuestro caso de nombre-nombre para obtener el cargo)
     import re
+    link = "https://www.sec.gov/include/ticker.txt"
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.get(link)
+    page = BeautifulSoup(driver.page_source,"html.parser")
+    for busqueda in page.findAll("pre",attrs={"style":"word-wrap: break-word; white-space: pre-wrap;"}):
+      guardar = busqueda.text
+    stockCIK  = str(guardar.replace("\t","\n")).split("\n")
+    for u in range(len(stockCIK)):
+      if str(stockCIK[u]).upper() == stock:
+        cik = str(stockCIK[u+1])
+    nombresAponer,cargosAponer = [],[]
+    link = "https://www.secform4.com/insider-trading/"+cik+".htm" #Competidores
+    driver.get(link)
+    page = BeautifulSoup(driver.page_source,"html.parser")
+    texto = []
+    for parte in page.findAll("table",attrs={"class":"sort-table"}):
+      texto.append(str(parte).split("InsiderRelationship"))
     try:
-      link = "https://www.sec.gov/include/ticker.txt"
-      driver = webdriver.Chrome(service=service, options=options)
-      driver.get(link)
-      page = BeautifulSoup(driver.page_source,"html.parser")
-      for busqueda in page.findAll("pre",attrs={"style":"word-wrap: break-word; white-space: pre-wrap;"}):
-        guardar = busqueda.text
-      stockCIK  = str(guardar.replace("\t","\n")).split("\n")
-      for u in range(len(stockCIK)):
-        if str(stockCIK[u]).upper() == stock:
-          cik = str(stockCIK[u+1])
-      nombresAponer,cargosAponer = [],[]
-      link = "https://www.secform4.com/insider-trading/"+cik+".htm" #Competidores
-      driver.get(link)
-      page = BeautifulSoup(driver.page_source,"html.parser")
-      texto = []
-      for parte in page.findAll("table",attrs={"class":"sort-table"}):
-        texto.append(str(parte).split("InsiderRelationship"))
-      try:
-        texto = texto[0][0].split("sec form 4 insider trading")[1:] #PROBLEMA NO HAY NADA
-      except:
-        continue
-    except: #Quizas esta parte se podria reducir
-      texto = []
-      cargo = []
+      texto = texto[0][0].split("sec form 4 insider trading")[1:] #PROBLEMA NO HAY NADA
+    except:
+      continue
+
     nombresAponer, cargosAponer = [],[]
     for i in range(len(texto)):
       texto[i] = str(str((texto[i].split(">")[1:])).split("/span")[0])
@@ -212,12 +211,6 @@ def insiderTraders(stocksCargados,diasAtras):
     try:
       nombre = accion.info['longBusinessSummary']
     except:
-      nombre = "No avaible"
-    try:
-      nombre = str(finnhub_client.company_profile2(symbol='AAPL')["name"])
-    except:
-      nombre = "No avaible"
-    if nombre == "No avaible":
       try:
         #Puesto ultimo#Puesto ultimo # HABRIA QUE HACER UN TRIA ACA ABAJO TAMBIEN# HABRIA QUE HACER UN TRIA ACA ABAJO TAMBIEN
         link = "https://www.wsj.com/market-data/quotes/"+str(stock)+"/company-people"
@@ -227,32 +220,26 @@ def insiderTraders(stocksCargados,diasAtras):
         page = BeautifulSoup(driver.page_source,"html.parser")
         nombreExtendido = page.find("span",attrs={"class":"hdr_co_name"})
         clear_output()
-        print(nombre)
         #Puesto ultimo#Puesto ultimo, antes nombre era "no avaible aca abajo"
         nombre = str(nombreExtendido.text) ## ACA VAMOS A HACER MODIFICACIONES PARA SACARLAS DE OTRO LADO
       except:
         nombre = "No avaible"
-    try:
-      if len(nombre.split(".")[0].split(" "))>4:
-        if len(nombre.split(",")[0].split(" "))<=4:
-          nombre = nombre.split(",")[0]
-        else:
-          nombre = " ".join((nombre.replace(".","").replace(",","").split(" "))[0:4])
-      else:
-        nombre = nombre.split(".")[0]
-    except:
-      print("continua")
-    print(nombre)
 
+    if len(nombre.split(".")[0].split(" "))>4:
+      if len(nombre.split(",")[0].split(" "))<=4:
+        nombre = nombre.split(",")[0]
+      else:
+        nombre = " ".join((nombre.replace(".","").replace(",","").split(" "))[0:4])
+    else:
+      nombre = nombre.split(".")[0]
+    print(nombre)
     time.sleep(0.5)
 
     dfNombreCargo = pd.DataFrame({"Nombre":nombresFinal,"Cargo":cargosFinal,"NombreMasProbable":nombresProbables})
     dfBuyOrSale = dfUltimosNdias[(dfUltimosNdias["buyOrSale"] == "Buy") | (dfUltimosNdias["buyOrSale"] == "Sale")]
     dfBuyOrSale["Position"] = ""
     dfBuyOrSale = dfBuyOrSale.rename(columns={"symbol": "Stock"})
-    #dfBuyOrSale["Extended name"] = nombre
-    #dfBuyOrSale["Stock"] = stock
-    
+    dfBuyOrSale["Extended name"] = nombre
     ### Exportamos el dataframe de insider transactions finalizado
     for i in range(len(dfBuyOrSale)):
       pos = list(dfNombreCargo[dfNombreCargo["Nombre"] == list(dfBuyOrSale["name"])[i]]["Cargo"])[0]
@@ -261,12 +248,13 @@ def insiderTraders(stocksCargados,diasAtras):
       except:
         dfBuyOrSale["Position"][i:i+1] = "INDEF"
     try:
-      df = pd.concat([pd.read_csv("insidersInfo.csv"),dfBuyOrSale])
-      df.to_csv("insidersInfo.csv",index=False)
+      df = pd.concat([pd.read_csv("insidersInfov2.csv"),dfBuyOrSale])
+      #df.to_csv("insidersInfo.csv",index=False)
+      df.to_csv("insidersInfov2.csv",index=False)
     except:
       #dfBuyOrSale.to_csv("insidersInfo.csv",index=False)
-      dfBuyOrSale.to_csv("insidersInfo.csv",index=False)
-      time.sleep(2)
+      dfBuyOrSale.to_csv("insidersInfov2.csv",index=False)
+      time.sleep(1)
 
     ## Hacemos un dataframe con el rango de fechas a analizar y los valores historicos hasta esa fecha del precio del stock
     datos = pd.DataFrame(accion.history(str(diasAtras)+"d")) # tiempo atras, se pone en el formato (diasAtras)+"d"
@@ -276,21 +264,26 @@ def insiderTraders(stocksCargados,diasAtras):
     valores = list(datos["Close"])
     valoreStock = pd.DataFrame({"Fecha":fechas,"Stock":str(stockPrincipal),"Valores":valores,"Extended name":nombre})
     try:
-      valoresTotales = pd.concat([pd.read_csv("preciosHist.csv"),valoreStock])
+      valoresTotales = pd.concat([pd.read_csv("preciosHistv2.csv"),valoreStock])
       #valoresTotales.to_csv("preciosHistoricos.csv",index = False)
-      valoresTotales.to_csv("preciosHist.csv",index = False)
+      valoresTotales.to_csv("preciosHistv2.csv",index = False)
     except:
       #valoreStock.to_csv("preciosHistoricos.csv",index = False)
-      valoreStock.to_csv("preciosHist.csv",index = False)
+      valoreStock.to_csv("preciosHistv2.csv",index = False)
       time.sleep(1)
     print(nombre)
-    
+
+
 # Deshabilitar las advertencias para pandas
 pd.options.mode.chained_assignment = None
 #
-#Vamos a poner casi mil de stocksTotales, en vez de stocksCargados
-print(diasAtras)
-insiderTraders(stocksTotales,diasAtras) ##cambiar
 
+#stocksCargados = lista
+#diasAtras = 180 ##SACADO ULTIMO SACADO ULTIMo
+#Vamos a poner casi mil de stocksTotales, en vez de stocksCargados
+
+#insiderTraders(stocksTotales[170:180],diasAtras) ##cambiar
+insiderTraders(stocksTotales,diasAtras) ##cambiar
+#
 # Volver a habilitar las advertenciasde pandas
 pd.options.mode.chained_assignment = 'warn'
