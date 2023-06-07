@@ -54,7 +54,7 @@ for i in range(len(totalStocks)):
 
   compe = []
   for i in range(len(stocks)):
-    if i%4 == 0: time.sleep(1) #PUESTO ULTIMOOOOOOOOOOOOOOOOOOOOOOOOOOO----------------------->17/03
+    if i%4 == 0: time.sleep(1) #PUESTO ULTIMOO----------------------->17/03
     compe.append(buscarCompetencia(stocks[i],["NASDAQ","NYSE"]))
   compe = list(set([item for sublist in compe for item in sublist])) #Unimos las distintas extracciones y sacamos los repetidos
   compe = insertarAdelante(compe,accionPrincipal) #Insertamos la accionPrincipal al principio(en caso de estar o no)
@@ -428,7 +428,10 @@ time.sleep(1)
 
 
 ###################################BUSCAMOS EL VALOR INTRINSECO
+print("Ahora el valor intrinseco")
 from datetime import datetime
+import pandas as pd
+import yahooquery as yq
 from yahooquery import Ticker
 import math
 dfcompeti = pd.read_csv("Competidores.csv")
@@ -441,7 +444,6 @@ for h in range(len(competidores)):
   print(competi)
   nombre = list(dfcompeti[dfcompeti["Competidor"]==competidores[h]]["Nombre"][0:1])[0]
   print(nombre)
-
   stocksTotales = competi
 
   lista = stocksTotales
@@ -452,21 +454,32 @@ for h in range(len(competidores)):
   competidor = []
   competitorOf = []
   for acc in range(len(lista)):
+    print("PASO 2 y medio")
     try:
       accion = lista[acc]
       aapl = Ticker(accion)
       print(acc)
       millon = math.pow(10,0)
+      
+      print(aapl.all_financial_data())
+      
+      print(aapl.cash_flow())
+      
+      #print(aapl.quotes[accion])
+      
+      print(aapl.balance_sheet())
       try:
         financialData = aapl.all_financial_data()
         cashflow = aapl.cash_flow()
-        quotes = aapl.quotes[accion]
+        #quotes = aapl.quotes[accion]
         balanceSheet = aapl.balance_sheet()
+        print(financialData)
       except:
         continue;
       #Vemos el crecimiento
       revenueGrowth = 0
       try:
+        
         largo = len(financialData["TotalRevenue"])
       except:
         continue;
@@ -511,13 +524,13 @@ for h in range(len(competidores)):
 
       costOfCapital = 9.47 # ES parametro este se ajusta
       terminalGrowthRate = 3 # ES parametro este se ajusta
-
+    
       #revenue = revenue_anterior*(1+revenueGrowth/100) #Si es cero, el revenue anterior es el  primer revenue (osea el sales-> TOmo el promedio como esta arriba o pongo devuelta?)
       revenue = []
       for i in range(10):
         if i==0:  revenue.append((sales*(1+revenueGrowth/100)))#/millon)
         else: revenue.append(revenue[-1]*(1+revenueGrowth/100))
-
+ 
       #currentAssets = revenue*currentAssetsToSales/100
       #currentLiabilities = revenue*currentLiabilitiesToSales/100
       currentAssets = []
@@ -580,13 +593,15 @@ for h in range(len(competidores)):
         lessCurrentOutstandingDebt = 0
       equityValue = (enterPriseValue -lessCurrentOutstandingDebt)
       try:
-        currentSharesOutstanding = quotes["sharesOutstanding"]
+        modules = 'defaultKeyStatistics'
+        currentSharesOutstanding = int(str(aapl.get_modules(modules)).split("sharesOutstanding")[1].split(":")[1].split(",")[0])
+        #currentSharesOutstanding = quotes["sharesOutstanding"]
       except:
         continue
       
-      equityValuePerShare = equityValue/currentSharesOutstanding  # dividir por 100 es bueno
+      equityValuePerShare = equityValue/currentSharesOutstanding  # dividir por 100 parecia lo correcto
 
-      #   4(CUATRO) Estas igual
+      #   4(CUATRO) 
       currentSharePrice = aapl.financial_data[accion]["currentPrice"] #YAHOQUERY
       #discount = (equityValuePerShare-currentSharePrice)/equityValuePerShare*100 #
       discount = (equityValuePerShare-currentSharePrice)/currentSharePrice*100 #
@@ -601,7 +616,6 @@ for h in range(len(competidores)):
       continue
   dfnew =  pd.DataFrame({"Competidor":competidor,"Nombre":competitorOf,"Stock":stock,"Price":precio,"intrinsic value":valorIntrinseco,"Safety margin":margen})
   df = pd.concat([df,dfnew])
-  
 
 df.to_csv("ValorIntrinseco.csv",index=False)
 ###################################TERMINO DE VALOR INTRINSECO
