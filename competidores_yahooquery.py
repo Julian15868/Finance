@@ -98,6 +98,7 @@ for i in range(len(totalStocks)):
     stocksGanadores = insertarAdelante(stocksGanadores, accionPrincipal) 
     print(stocksGanadores)
     #Despues se podria quitar la busqueda de market cap aunque no se si conviene
+  
     
     #Utilizamos yahooquery para buscar las estadisticas que nos falten para cada uno de los competidores
     allValues = []
@@ -111,110 +112,118 @@ for i in range(len(totalStocks)):
       accion = stocksGanadores[i]
       symbol = yq.Ticker(accion)
       #newnew
+
       estaEnDfAntiguo = False
-      try:
-        dataframeExtraccion = pd.read_csv("competidores.csv")
-        if accion in list(dataframeExtraccion["stock"]):
+      import os #newnew
+      """archivo_csv = "Competidores.csv"
+      if os.path.isfile(archivo_csv):
+        print("Existe el dataframe competi")
+        dataframeExtraccion = pd.read_csv("Competidores.csv").copy()
+        if str(accion) in dataframeExtraccion["Stock"].values.tolist():
           estaEnDfAntiguo = True
+          print("ESTA EN COMPETIDORES ANTIGUO")
+      else:
+        print("No existe el dataframe competi")
+
+      #if estaEnDfAntiguo == False:"""
+
+      #problemas = False
+      try:
+        infoFinanciera = str(symbol.financial_data[accion]) #problema aca creo, #asset_profile era antes
       except:
-        print("No se ha creado aun competidores.csv")
-      #newnew
-
-      estaEnDfAntiguo = False
-
-      if estaEnDfAntiguo == False:
+        print("problemas")
+      valor = []
+      try:
+        largo = len(infoFinanciera)
+      except:
+        print("Problemas")
+        break
+      for j in range(len(estadistica)): 
+        problemas = False
         try:
-          infoFinanciera = str(symbol.financial_data[accion]) #problema aca creo, #asset_profile era antes
+          estadisticaYvalor = ((str(infoFinanciera).split(","))[j].replace("{","").replace("}","").replace("'","").replace(" ","",2).split(":"))
+          estadisticaPalabra = str(estadisticaYvalor[0][0]).upper()+str(estadisticaYvalor[0][1:])
+          estadisticaPalabra = separarMayus(estadisticaPalabra)
+          valor.append(str(estadisticaYvalor[1]))
         except:
-          print("problemas")
-        valor = []
-        try:
-          largo = len(infoFinanciera)
-        except:
-          print("Problemas")
-          break
-        for j in range(len(estadistica)): 
-          problemas = False
-          try:
-            estadisticaYvalor = ((str(infoFinanciera).split(","))[j].replace("{","").replace("}","").replace("'","").replace(" ","",2).split(":"))
-            estadisticaPalabra = str(estadisticaYvalor[0][0]).upper()+str(estadisticaYvalor[0][1:])
-            estadisticaPalabra = separarMayus(estadisticaPalabra)
-            valor.append(str(estadisticaYvalor[1]))
-          except:
-            problemas = True
-            valor.append("CHEQUEO") # En vez de chequeo seria cero (0)-> pero esta solucion si bien es fea, nos conviene.
+          problemas = True
+          valor.append("CHEQUEO") # En vez de chequeo seria cero (0)-> pero esta solucion si bien es fea, nos conviene.
 
-        #Utilizamos yahooQuery (yaho finance no funciona mas)
-        ticker_object = yq.Ticker(accion)
-        income_statement = ticker_object.income_statement()
-        incomeStatement = income_statement.T.iloc[0:,0:1].T
-        financials = ticker_object.financial_data[accion]
-        balance_sheet = ticker_object.balance_sheet()
+      #Utilizamos yahooQuery (yaho finance no funciona mas)
+      ticker_object = yq.Ticker(accion)
+      income_statement = ticker_object.income_statement()
+      incomeStatement = income_statement.T.iloc[0:,0:1].T
+      financials = ticker_object.financial_data[accion]
+      balance_sheet = ticker_object.balance_sheet()
 
-        #Datos del ultimo año
-        # Price earning #
-        try:
-          priceEarning = ticker_object.summary_detail[accion]["trailingPE"]
-        except:
-          priceEarning = 0
-        valor.append(priceEarning)
+      #Datos del ultimo año
+      # Price earning #
+      try:
+        priceEarning = ticker_object.summary_detail[accion]["trailingPE"]
+      except:
+        priceEarning = 0
+      valor.append(priceEarning)
 
-        # Profilability ratios  #
-        try:
-          returnOnSales = int(pd.DataFrame(incomeStatement)["NetIncome"])/financials["totalRevenue"] #PARECE QUE SI
-        except:
-          returnOnSales = 0 #era none
-        valor.append(returnOnSales)
+      # Profilability ratios  #
+      try:
+        returnOnSales = int(pd.DataFrame(incomeStatement)["NetIncome"])/financials["totalRevenue"] #PARECE QUE SI
+      except:
+        returnOnSales = 0 #era none
+      valor.append(returnOnSales)
 
-        # Activity ratios #
-        try:
-          totalSales = financials["totalRevenue"] #ESTE NO ESTOY MUY SEGURO POR EL TOTAL SALES 
-          daysReceivable = (balance_sheet["AccountsReceivable"][-1]/totalSales)*365
-        except:
-          daysReceivable = 0 #era none
-        valor.append(daysReceivable)
+      # Activity ratios #
+      try:
+        totalSales = financials["totalRevenue"] #ESTE NO ESTOY MUY SEGURO POR EL TOTAL SALES 
+        daysReceivable = (balance_sheet["AccountsReceivable"][-1]/totalSales)*365
+      except:
+        daysReceivable = 0 #era none
+      valor.append(daysReceivable)
 
-        try:
-          cogs = income_statement["CostOfRevenue"][-1]#cost of goods solds -> es costOfRevenue al parecer
-          daysInventory = balance_sheet["Inventory"][-1]/(cogs/365) 
-        except:
-          daysInventory = 0 #era none
-        valor.append(daysInventory)
+      try:
+        cogs = income_statement["CostOfRevenue"][-1]#cost of goods solds -> es costOfRevenue al parecer
+        daysInventory = balance_sheet["Inventory"][-1]/(cogs/365) 
+      except:
+        daysInventory = 0 #era none
+      valor.append(daysInventory)
 
-        # Debt ratios #
-        try:
-          debtToAssets = balance_sheet["TotalDebt"][-1]/balance_sheet["TotalAssets"][-1] 
-        except:
-          debtToAssets = 0 #era none
-        valor.append(debtToAssets)
+      # Debt ratios #
+      try:
+        debtToAssets = balance_sheet["TotalDebt"][-1]/balance_sheet["TotalAssets"][-1] 
+      except:
+        debtToAssets = 0 #era none
+      valor.append(debtToAssets)
 
-        try:
-          ownersEquity = balance_sheet["StockholdersEquity"][-1] ##PARECE QUE SI
-          leverage = balance_sheet["TotalAssets"][-1]/ownersEquity
-        except:
-          leverage = 0 #era none
-        valor.append(leverage)
+      try:
+        ownersEquity = balance_sheet["StockholdersEquity"][-1] ##PARECE QUE SI
+        leverage = balance_sheet["TotalAssets"][-1]/ownersEquity
+      except:
+        leverage = 0 #era none
+      valor.append(leverage)
 
-        try: 
-          interest = income_statement["InterestExpense"][-1] #PARECE QUE SI
-          timeInterestEarned = income_statement["EBIT"][-1]/(interest)
-        except:
-          timeInterestEarned = 0 #era none
-        valor.append(timeInterestEarned)
-        #Esto nisiqueira lo modificamos
-        allValues.append(valor) #Es necesario tener allvalues y valor por separado? quizas sacar  uno de los dos (NEWNEW)
-        print("allVALUIEs")
+      try: 
+        interest = income_statement["InterestExpense"][-1] #PARECE QUE SI
+        timeInterestEarned = income_statement["EBIT"][-1]/(interest)
+      except:
+        timeInterestEarned = 0 #era none
+      valor.append(timeInterestEarned)
+      #Esto nisiqueira lo modificamos
+      allValues.append(valor) #Es necesario tener allvalues y valor por separado? quizas sacar  uno de los dos (NEWNEW)
+      print("allVALUIEs no sacado")
+      print(allValues)
+
+      if problemas == True:
+        print("No se pudo con "+str(accion))
+        
+      """else:
+        allValues.append(list(dataframeExtraccion[dataframeExtraccion["Stock"]==accion].iloc[:,3:].values.tolist()[0]))
+        print("SACADO")
         print(allValues)
+        print("Anteior sacado")"""
 
-        if problemas == True:
-          print("No se pudo con "+str(accion))
-      #PODEMOS SALIR DE ACA DE ALGUNA MANER
-      else: #newnewnew
-        dataframeExtraccion = dataframeExtraccion[dataframeExtraccion["stock"]==accion]
-        allValues.append(list(dataframeExtraccion.iloc[:,2:].values.tolist()[0]))
 
     #Comienzo nivel 2
     #Agregamos a la estadisticas las nuevas columnas
+
     estadisticasDefinidas = estadisticasDefinidas + otrasEstadisticas
 
     #Agregamos el NOMBRE EXTENDIDO de la accion principal : ACLARACION: Esto se podia poner antes asi no se repite pa
@@ -339,7 +348,7 @@ time.sleep(1)
 print("BUSCAREMOS LAS OCUPACIONES DE CADA UNO")
 ## Sacaremos la informacion de que se ocupa la accion desde sec.gov
 # Para eso primero buscamos el CIK asociado al stock, ya que el link que buscamos usa esto.
-dataFrame = pd.read_csv("Competidores.csv")
+dataFrame = pd.read_csv("Competidores.csv").copy()
 analizados = list(set(dataFrame["Competidor"]))
 #
 link = "https://www.sec.gov/include/ticker.txt"
@@ -425,12 +434,19 @@ dataEyO.to_csv("Ocupaciones.csv",sep=",",index=False) #
 time.sleep(1)
 
 
+
+
+
+
+
 ##  BUSCAMOS EL VALOR INTRINSECO  ##
 print("BUSCAREMOS EL VALOR INTRINSECO DE CADA ACCION")
 dfcompeti = pd.read_csv("Competidores.csv")
 competidores = list(set(dfcompeti["Competidor"]))
 print(competidores)
 df = pd.DataFrame()
+
+#competidores = ["AMZN"] #BORRAR
 for h in range(len(competidores)):
   dfcompeti = pd.read_csv("Competidores.csv")
   competi = list(dfcompeti[dfcompeti["Competidor"]==competidores[h]]["Stock"]) # EL stock principal y los 3 competidores con mas marketcap->aca deberia cambiar por si tiene menos competidores, hacer un try poniendo todos
@@ -438,8 +454,10 @@ for h in range(len(competidores)):
   nombre = list(dfcompeti[dfcompeti["Competidor"]==competidores[h]]["Nombre"][0:1])[0]
   print(nombre)
   stocksTotales = competi
-
-
+  
+  millon = math.pow(10,3) #cambiando esto deberia dar lo mismo ya que es solo ver que numeros
+  #nombre = "MELI"
+  #stocksTotales = ["MELI","BABA","NFLX","DIS","AAPL","AMZN","META"] #SACARLOOOOOOOO #Descomentar
 
   precio = []
   valorIntrinseco = []
@@ -457,51 +475,74 @@ for h in range(len(competidores)):
         cashflow = aapl.cash_flow()
         balanceSheet = aapl.balance_sheet()
       except:
-        continue;
-      revenueGrowth = 0 #Vemos el crecimiento
+        continue
       try:
         largo = len(financialData["TotalRevenue"])
       except:
         continue
 
+      revenueGrowth = 0 
       for i in range(1,largo):
         crecimiento = ((financialData["TotalRevenue"][-i]-financialData["TotalRevenue"][-i-1])/financialData["TotalRevenue"][-i-1])*100
-        #print(crecimiento) #UTIL#UTIL#UTIL#UTIL
         revenueGrowth += crecimiento
       revenueGrowth = revenueGrowth/(largo-1) #Promedio de crecimiento en los ultimos años
-      #print("\nRevenue Growth:"+str(revenueGrowth))  #UTIL#UTIL#UTIL#UTIL
+      #print(revenueGrowth)
+      print(financialData["TotalRevenue"])
 
       #Habra que hacer un try except con todos 
       try:
-        capex = (cashflow["CapitalExpenditure"].mean())#/millon
+        capex = (cashflow["CapitalExpenditure"].mean())/millon
       except:
         capex = 0
       try:
-        depreciation = (cashflow["depreciation"].mean())#/millon ##OR  financialData["Depreciation"]
+        depreciation = (cashflow["depreciation"].mean())/millon ##OR  financialData["Depreciation"]
       except:
         depreciation = 0
-      sales = financialData["TotalRevenue"].mean() #Mantenemos unas ventas promedio
+      sales = financialData["TotalRevenue"].mean()/millon #Mantenemos unas ventas promedio
       
-      cantidadAniosRegistrados = 5 # Si lo cambio tengo que cambiar todos los range
+      cantidadAniosRegistrados = 5 # Si lo cambio tengo que cambiar todos los range _>_>>_>_>__> esto esta bien?
       sales *= 0.8 #este lo puso Dario newnew
 
       try:
-        COGStoSales = financialData["CostOfRevenue"].mean()/sales*100
+        COGStoSales = financialData["CostOfRevenue"].mean()/sales*100/millon
       except:
         COGStoSales = 0
       try:
-        SGandAtoSales = financialData["SellingGeneralAndAdministration"].mean()/sales*100
+        SGandAtoSales = financialData["SellingGeneralAndAdministration"].mean()/sales*100/millon
+
       except:
         SGandAtoSales = 0
-      taxRate = 28/100
+      taxRate = 28 
       try:
-        currentAssetsToSales = financialData["CurrentAssets"].mean()/sales*100
+        currentAssetsToSales = financialData["CurrentAssets"].mean()/sales*100/millon
       except:
         currentAssetsToSales = 0
       try:
-        currentLiabilitiesToSales = financialData["CurrentLiabilities"].mean()/sales*100
+        currentLiabilitiesToSales = financialData["CurrentLiabilities"].mean()/sales*100/millon
       except:
         currentLiabilitiesToSales = 0
+#######
+
+      
+      """print("revenueGrowth")
+      print(revenueGrowth)
+      print("capex")
+      print(capex)
+      print("depreciation")
+      print(depreciation)
+      print("cantidadAniosRegistrados")
+      print(cantidadAniosRegistrados)
+      print("COGStoSales")
+      print(COGStoSales)
+      print("SGandAtoSales")
+      print(SGandAtoSales)
+      print("currentAssetsToSales")
+      print(currentAssetsToSales)
+      print("currentLiabilitiesToSales")
+      print(currentLiabilitiesToSales)"""
+      #JHASTA ACA PARECE TODO BIEN
+      
+   
 
       #ABAJO ESTA COST OF CAPITAL
       terminalGrowthRate = 0 # ES parametro este se ajusta
@@ -512,6 +553,7 @@ for h in range(len(competidores)):
       for i in range(cantidadAniosRegistrados):
         if i==0:  revenue.append((sales*(1+revenueGrowth/100)))#/millon)
         else: revenue.append(revenue[-1]*(1+revenueGrowth/100))
+
  
       #currentAssets = revenue*currentAssetsToSales/100
       #currentLiabilities = revenue*currentLiabilitiesToSales/100
@@ -520,39 +562,65 @@ for h in range(len(competidores)):
       try:
         for i in range(cantidadAniosRegistrados):
           if i == 0:
-            currentAssets.append((financialData["CurrentAssets"].mean()))#/millon)
-            currentLiabilities.append((financialData["CurrentLiabilities"].mean()))#/millon)
+            currentAssets.append((financialData["CurrentAssets"].mean()/millon))#/millon)
+            currentLiabilities.append((financialData["CurrentLiabilities"].mean()/millon))#/millon)
           else:
-            currentAssets.append((currentAssetsToSales*revenue[i]/100))
-            currentLiabilities.append((currentLiabilitiesToSales*revenue[i]/100))
+            currentAssets.append((currentAssetsToSales*revenue[i]/100/millon/millon))
+            currentLiabilities.append((currentLiabilitiesToSales*revenue[i]/100/millon))
       except:
         currentAssets = [0 for x in range(cantidadAniosRegistrados)]
         currentLiabilities = [0 for x in range(cantidadAniosRegistrados)]
-      
+
+
       #   2(DOS)
       #revenue lo pusimos arriba
-      operatingIncome = [(revenue[i]*(100-COGStoSales-SGandAtoSales)/100) for i in range(cantidadAniosRegistrados)]
+      operatingIncome = [(revenue[i]*(100-COGStoSales-SGandAtoSales)/100) for i in range(cantidadAniosRegistrados)] #ESTA BIEN LO DE ADENTRO?
       taxes = [(operatingIncome[i]*taxRate/100) for i in range(cantidadAniosRegistrados)]
       nopat = [(operatingIncome[i]-taxes[i]) for x in range(cantidadAniosRegistrados)]
 
       # Valores estaticos NEWNEW # CAMBIAR TOODOS AC ACCION PRINCIPAL y cambiar el aapl
+      #ESTO ES ASI?
       risk = 3.75/100
       marketPremium = 6/100
       kd = 6/100
       # Valores dinamicos NEWNEW
       beta = aapl.summary_detail[stocksTotales[acc]]["beta"] #volatilidad con respecto al mercado
       try:
-        debt = aapl.balance_sheet().loc[:,"LongTermDebt"][-1] #Aca puse long term debt
+        debt = aapl.balance_sheet().loc[:,"LongTermDebt"][-1]/millon #Aca puse long term debt
       except:
         debt = 0
-      marketCap = aapl.summary_detail[stocksTotales[acc]]["marketCap"]
-      ke = risk + marketPremium*beta
-      costOfCapital = kd*(1-taxRate)*debt/(debt+marketCap)+ke*marketCap/(debt+marketCap) #el tax rate es 28/1000
+      marketCap = aapl.summary_detail[stocksTotales[acc]]["marketCap"]/millon
+      ke = risk + marketPremium*beta   
+      costOfCapital = kd*(1-taxRate/100)*debt/(debt+marketCap)+ke*marketCap/(debt+marketCap)*100 # MULTIPLIQUE POR 100Z:Z:Z:Z: #el tax rate es 28/1000
+
+
+      """print("revenue")
+      print(revenue)
+      print("currentAssets")
+      print(currentAssets)
+      print("currentLiabilities")
+      print(currentLiabilities)
+      print("operatingIncome")
+      print(operatingIncome)
+      print("taxes")
+      print(taxes)
+      print("nopat")
+      print(nopat)
+      print("debt")
+      print(debt)
+      print("marketCap")
+      print(marketCap)
+      print("ke")
+      print(ke)
+      print("costOfCapital")
+      print(costOfCapital)"""
+
+      #HASTA ACA PARECE TODO BIEN?
 
       #changeInNwc = (currentAssets-currentLiabilities)-(currentAssets_anterior-currentLiabilities_anterior)
       changeInNwc = []
       try:
-        currentLiabilitiesAnterior = (financialData["CurrentLiabilities"][-1])#/millon #Aca cambie la media por el ultimo
+        currentLiabilitiesAnterior = (financialData["CurrentLiabilities"][-1])/millon #Aca cambie la media por el ultimo
       except:
         currentLiabilitiesAnterior = 0
       for i in range(cantidadAniosRegistrados):
@@ -566,8 +634,8 @@ for h in range(len(competidores)):
             changeInNwc.append((currentAssets[i]-currentLiabilities[i])-(currentAssets[i-1]-currentLiabilities[i-1]))
           except:
             changeInNwc.append(0)
-        
       FCF = [nopat[i]-capex+depreciation-changeInNwc[i] for i in range(cantidadAniosRegistrados)]
+
       
       terminalValue = [0 for i in range(cantidadAniosRegistrados)]
       terminalValue[-1] = (FCF[-1]*100*(1+(terminalGrowthRate)/100)/(costOfCapital-terminalGrowthRate)) #el numero 10 lo modificamos
@@ -575,24 +643,53 @@ for h in range(len(competidores)):
       presentValueOfFlows = [totalCashFlow[i]/pow((1+costOfCapital/100),i) for i in range(cantidadAniosRegistrados)] # Cambiamos cantidaddeanioosregistrados por i 
 
       #   3(TRES) Estas no son listas, son valores nada mas.
-      enterPriseValue = sum(presentValueOfFlows)#/millon
+      enterPriseValue = sum(presentValueOfFlows) #SACAMOS LA DIVISION POR MILLON
+
       try:
-        lessCurrentOutstandingDebt = balanceSheet["LongTermDebt"].mean()#/millon 
+        lessCurrentOutstandingDebt = balanceSheet["LongTermDebt"].mean()/millon 
       except:
         lessCurrentOutstandingDebt = 0
-      equityValue = (enterPriseValue -lessCurrentOutstandingDebt)
+      equityValue = (enterPriseValue -lessCurrentOutstandingDebt) #Falta mas exceso de cash pero no hay en estos casos
       try:
         modules = 'defaultKeyStatistics'
-        currentSharesOutstanding = int(str(aapl.get_modules(modules)).split("sharesOutstanding")[1].split(":")[1].split(",")[0])
+        currentSharesOutstanding = int(str(aapl.get_modules(modules)).split("sharesOutstanding")[1].split(":")[1].split(",")[0])/millon
       except:
         continue
-      
-      equityValuePerShare = equityValue/currentSharesOutstanding  # dividir por 100 parecia lo correcto
-
+    
+      equityValuePerShare = equityValue/currentSharesOutstanding  
       #   4(CUATRO) 
       currentSharePrice = aapl.financial_data[accion]["currentPrice"] 
+      
       discount = (equityValuePerShare-currentSharePrice)/currentSharePrice*100 #
 
+      """print("changeInNwc")
+      print(changeInNwc)
+      print("currentLiabilitiesAnterior")
+      print(currentLiabilitiesAnterior)
+      print("terminalValue")
+      print(terminalValue)
+      print("totalCashFlow")
+      print(totalCashFlow)
+      print("presentValueOfFlows")
+      print(presentValueOfFlows)
+      print("enterPriseValue")
+      print(enterPriseValue)
+      print("lessCurrentOutstandingDebt")
+      print(lessCurrentOutstandingDebt)
+      print("equityValue")
+      print(equityValue)
+      print("currentSharesOutstanding")
+      print(currentSharesOutstanding)
+      print("equityValuePerShare")
+      print(equityValuePerShare)
+      print("currentSharePrice")
+      print(currentSharePrice)
+      print("discount")
+      print(discount)"""
+
+      #HASTA ACA REGISTRADO: CHEQUEAR ENTERPRISE VALLUE
+      
+      
       valorIntrinseco.append(round(equityValuePerShare,2))
       precio.append(round(currentSharePrice,2))
       margen.append(str(round(discount,2))+"%")
@@ -604,9 +701,10 @@ for h in range(len(competidores)):
     except:
       continue
 
-  df = pd.concat([df,dfnew])
+  df = pd.concat([df,dfnew]) 
 
 df.to_csv("ValorIntrinseco.csv",index=False)
+print(dfnew)
 print("VALOR INTRINSECO TERMINADO\n-> Codigo finalizado <-")
 
 tiempoFinal= time.time()
