@@ -434,11 +434,6 @@ dataEyO.to_csv("Ocupaciones.csv",sep=",",index=False) #
 time.sleep(1)
 
 
-
-
-
-
-
 ##  BUSCAMOS EL VALOR INTRINSECO  ##
 print("BUSCAREMOS EL VALOR INTRINSECO DE CADA ACCION")
 dfcompeti = pd.read_csv("Competidores.csv")
@@ -446,7 +441,7 @@ competidores = list(set(dfcompeti["Competidor"]))
 print(competidores)
 df = pd.DataFrame()
 
-#competidores = ["AMZN"] #BORRAR
+
 for h in range(len(competidores)):
   dfcompeti = pd.read_csv("Competidores.csv")
   competi = list(dfcompeti[dfcompeti["Competidor"]==competidores[h]]["Stock"]) # EL stock principal y los 3 competidores con mas marketcap->aca deberia cambiar por si tiene menos competidores, hacer un try poniendo todos
@@ -455,9 +450,10 @@ for h in range(len(competidores)):
   print(nombre)
   stocksTotales = competi
   
-  millon = math.pow(10,3) #cambiando esto deberia dar lo mismo ya que es solo ver que numeros
-  #nombre = "MELI"
-  #stocksTotales = ["MELI","BABA","NFLX","DIS","AAPL","AMZN","META"] #SACARLOOOOOOOO #Descomentar
+  #factor = math.pow(10,0) #cambiando esto deberia dar lo mismo ya que es solo ver que numeros
+  #nombre = "AMZN"
+  #stocksTotales = ["WIRE","NFLX","AMZN","MELI","AAPL","META","CMRX"] #SACARLOOOOOOOO #Descomentar
+  #stocksTotales = ["WIRE","NOG","SD","ROCC","JAKK","CALM","ADTH","OVV","HCC","CHRD","CRDE","PDCE","RRC","NEX","ESTE"]
 
   precio = []
   valorIntrinseco = []
@@ -469,7 +465,8 @@ for h in range(len(competidores)):
     try:
       accion = stocksTotales[acc]
       aapl = Ticker(accion) #Deberia no llamarse aapl
-      print(accion)
+      print("\n")
+      print(str(accion)+":  ")
       try:
         financialData = aapl.all_financial_data()
         cashflow = aapl.cash_flow()
@@ -485,46 +482,50 @@ for h in range(len(competidores)):
       for i in range(1,largo):
         crecimiento = ((financialData["TotalRevenue"][-i]-financialData["TotalRevenue"][-i-1])/financialData["TotalRevenue"][-i-1])*100
         revenueGrowth += crecimiento
-      revenueGrowth = revenueGrowth/(largo-1) #Promedio de crecimiento en los ultimos años
-      #print(revenueGrowth)
-      print(financialData["TotalRevenue"])
+      revenueGrowth = np.round(revenueGrowth/(largo-1),0) #Promedio de crecimiento en los ultimos años
 
-      #Habra que hacer un try except con todos 
+      revenueGrowth = 0
+
       try:
-        capex = (cashflow["CapitalExpenditure"].mean())/millon
+        capex = np.round((cashflow["CapitalExpenditure"][-1]),2) # es un menos en realidad pero no importa porque en changenwc lo ponemos alrevez al giso
       except:
         capex = 0
       try:
-        depreciation = (cashflow["depreciation"].mean())/millon ##OR  financialData["Depreciation"]
+        depreciation = np.round((cashflow["DepreciationAndAmortization"][-1]),0) ##OR  financialData["Depreciation"] #Ver
       except:
         depreciation = 0
-      sales = financialData["TotalRevenue"].mean()/millon #Mantenemos unas ventas promedio
+      sales = np.round(financialData["TotalRevenue"][-1],0) #Mantenemos unas ventas promedio
+
       
-      cantidadAniosRegistrados = 5 # Si lo cambio tengo que cambiar todos los range _>_>>_>_>__> esto esta bien?
-      sales *= 0.8 #este lo puso Dario newnew
+      cantidadAniosRegistrados = 5 # Verificar
+      sales *= 1 # En 1 dio buenos resultados
 
       try:
-        COGStoSales = financialData["CostOfRevenue"].mean()/sales*100/millon
+        COGStoSales = np.round((financialData["CostOfRevenue"][-1]/sales)*100,0)
       except:
         COGStoSales = 0
       try:
-        SGandAtoSales = financialData["SellingGeneralAndAdministration"].mean()/sales*100/millon
-
+        SGandAtoSales = np.round((financialData["SellingGeneralAndAdministration"][-1]/sales)*100,0)
       except:
         SGandAtoSales = 0
-      taxRate = 28 
+      taxRate = 23
       try:
-        currentAssetsToSales = financialData["CurrentAssets"].mean()/sales*100/millon
+        currentAssetsToSales = np.round((financialData["CurrentAssets"][-1]/sales)*100,0)
       except:
         currentAssetsToSales = 0
       try:
-        currentLiabilitiesToSales = financialData["CurrentLiabilities"].mean()/sales*100/millon
+        currentLiabilitiesToSales = np.round((financialData["CurrentLiabilities"][-1]/sales)*100,0)
       except:
         currentLiabilitiesToSales = 0
 #######
 
-      
-      """print("revenueGrowth")
+      print("\n")
+      print("Depreciation")
+      print(depreciation)
+      #print("CostOfRevenue")
+      #print(financialData["CostOfRevenue"])
+      #
+      print("revenueGrowth")
       print(revenueGrowth)
       print("capex")
       print(capex)
@@ -539,62 +540,80 @@ for h in range(len(competidores)):
       print("currentAssetsToSales")
       print(currentAssetsToSales)
       print("currentLiabilitiesToSales")
-      print(currentLiabilitiesToSales)"""
-      #JHASTA ACA PARECE TODO BIEN
-      
-   
+      print(currentLiabilitiesToSales)
+      #
 
-      #ABAJO ESTA COST OF CAPITAL
-      terminalGrowthRate = 0 # ES parametro este se ajusta
-      revenueGrowth = 0 #parameter, better than 5 years average
+      print("\n")
+      
+      terminalGrowthRate = 0 # 
+      
 
       #revenue = revenue_anterior*(1+revenueGrowth/100) #Si es cero, el revenue anterior es el  primer revenue (osea el sales-> TOmo el promedio como esta arriba o pongo devuelta?)
       revenue = []
       for i in range(cantidadAniosRegistrados):
-        if i==0:  revenue.append((sales*(1+revenueGrowth/100)))#/millon)
-        else: revenue.append(revenue[-1]*(1+revenueGrowth/100))
+        if i==0:  revenue.append((sales*(1+revenueGrowth/100)))
+        else: revenue.append(np.round(revenue[-1]*(1+revenueGrowth/100)))
 
- 
-      #currentAssets = revenue*currentAssetsToSales/100
-      #currentLiabilities = revenue*currentLiabilitiesToSales/100
+      #NEENEENEENEENEENEENEENEENEENEE
+      try:
+        currentLiabilitiesAnterior = np.round(financialData["CurrentLiabilities"][-1],0) #AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA
+        currentAssetsAnterior = np.round(financialData["CurrentAssets"][-1],0) #AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA
+      except:
+        currentLiabilitiesAnterior = 0
+        currentAssetsAnterior = 0
+      #NEENEENEENEENEENEENEENEE
+      
       currentAssets = []
       currentLiabilities = []
       try:
         for i in range(cantidadAniosRegistrados):
-          if i == 0:
-            currentAssets.append((financialData["CurrentAssets"].mean()/millon))#/millon)
-            currentLiabilities.append((financialData["CurrentLiabilities"].mean()/millon))#/millon)
-          else:
-            currentAssets.append((currentAssetsToSales*revenue[i]/100/millon/millon))
-            currentLiabilities.append((currentLiabilitiesToSales*revenue[i]/100/millon))
+          currentAssets.append(round((currentAssetsAnterior/sales*100)*revenue[i]/100,1)) # 100 fueron agregados porque estaba en porcentaje antes
+          currentLiabilities.append(round((currentLiabilitiesAnterior/sales*100)*revenue[i]/100,1)) #100 fueron agregados orque estaba en porcentaje antes
       except:
         currentAssets = [0 for x in range(cantidadAniosRegistrados)]
         currentLiabilities = [0 for x in range(cantidadAniosRegistrados)]
 
 
-      #   2(DOS)
-      #revenue lo pusimos arriba
-      operatingIncome = [(revenue[i]*(100-COGStoSales-SGandAtoSales)/100) for i in range(cantidadAniosRegistrados)] #ESTA BIEN LO DE ADENTRO?
-      taxes = [(operatingIncome[i]*taxRate/100) for i in range(cantidadAniosRegistrados)]
-      nopat = [(operatingIncome[i]-taxes[i]) for x in range(cantidadAniosRegistrados)]
+        """##ULTIMO CAMBIO#ULTIMO CAMBIO#ULTIMO CAMBIO
+        currentAssets = []
+      currentLiabilities = []
+      try:
+        for i in range(cantidadAniosRegistrados):
+          if i == 0:
+            currentAssets.append(round(financialData["CurrentAssets"][-1],1)) # ACA QUIZAS PONNER CANTIDAD DE AÑOS REGISTRADOS MAS UNO Y SACAR EL PRIMER AÑO!!!
+            currentLiabilities.append(round(financialData["CurrentLiabilities"][-1],1))
+          else:
+            currentAssets.append(round(currentAssetsToSales*revenue[i]/100,1)) # 100 fueron agregados porque estaba en porcentaje antes
+            currentLiabilities.append(round(currentLiabilitiesToSales*revenue[i]/100,1)) #100 fueron agregados orque estaba en porcentaje antes
+      except:
+        currentAssets = [0 for x in range(cantidadAniosRegistrados)]
+        currentLiabilities = [0 for x in range(cantidadAniosRegistrados)]
 
-      # Valores estaticos NEWNEW # CAMBIAR TOODOS AC ACCION PRINCIPAL y cambiar el aapl
+        """
+
+
+      #   2(DOS)
+      # Verificar
+      operatingIncome = [np.round(((revenue[i]*(100-COGStoSales-SGandAtoSales)/100)),0) for i in range(cantidadAniosRegistrados)] #ESTA BIEN LO DE ADENTRO?
+      taxes = [np.round((operatingIncome[i]*taxRate/100),0) for i in range(cantidadAniosRegistrados)]
+      nopat = [np.round((operatingIncome[i]-taxes[i]),0) for i in range(cantidadAniosRegistrados)]
+
+      # cambiar acc, y aapl.(*nombres)
       #ESTO ES ASI?
       risk = 3.75/100
       marketPremium = 6/100
       kd = 6/100
       # Valores dinamicos NEWNEW
-      beta = aapl.summary_detail[stocksTotales[acc]]["beta"] #volatilidad con respecto al mercado
+      beta = aapl.summary_detail[stocksTotales[acc]]["beta"] # Volatilidad con respecto al mercado
       try:
-        debt = aapl.balance_sheet().loc[:,"LongTermDebt"][-1]/millon #Aca puse long term debt
+        debt = aapl.balance_sheet().loc[:,"LongTermDebt"][-1] # Preguntar longTermDebt si esta bien
       except:
         debt = 0
-      marketCap = aapl.summary_detail[stocksTotales[acc]]["marketCap"]/millon
+      marketCap = aapl.summary_detail[stocksTotales[acc]]["marketCap"]
       ke = risk + marketPremium*beta   
-      costOfCapital = kd*(1-taxRate/100)*debt/(debt+marketCap)+ke*marketCap/(debt+marketCap)*100 # MULTIPLIQUE POR 100Z:Z:Z:Z: #el tax rate es 28/1000
+      costOfCapital = np.round(kd*(1-taxRate/100)*debt/(debt+marketCap)+ke*marketCap/(debt+marketCap),4) #*100 QUITAR posiblemente, Verificar esto, el 100 me olvide de anotar porque lo puse, verificar
 
-
-      """print("revenue")
+      print("revenue")
       print(revenue)
       print("currentAssets")
       print(currentAssets)
@@ -613,20 +632,28 @@ for h in range(len(competidores)):
       print("ke")
       print(ke)
       print("costOfCapital")
-      print(costOfCapital)"""
-
+      print(costOfCapital)
+      print("beta")
+      print(beta)
+      print("\n")
       #HASTA ACA PARECE TODO BIEN?
-
+      ###HASTA ACA
       #changeInNwc = (currentAssets-currentLiabilities)-(currentAssets_anterior-currentLiabilities_anterior)
       changeInNwc = []
-      try:
-        currentLiabilitiesAnterior = (financialData["CurrentLiabilities"][-1])/millon #Aca cambie la media por el ultimo
+      """try:
+        currentLiabilitiesAnterior = np.round(financialData["CurrentLiabilities"][-1],0) #AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA
+        currentAssetsAnterior = np.round(financialData["CurrentAssets"][-1],0) #AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA#AO QUIZAS PONER -2 ACA
       except:
         currentLiabilitiesAnterior = 0
-      for i in range(cantidadAniosRegistrados):
+        currentAssetsAnterior = 0"""
+      
+      #MODIFICADOS
+      for i in range(cantidadAniosRegistrados): 
         if i==0:
           try:
-            changeInNwc.append((int((currentAssets[i]-currentLiabilities[i])-(sales-currentLiabilitiesAnterior))))#millon)
+            changeInNwc.append((currentAssets[i]-currentLiabilities[i])-(currentAssetsAnterior-currentLiabilitiesAnterior)) #este sales deberia ser currentAssents anterior #MODIFICADO ULTIMO
+            #print("\nVALORES")
+            #print(currentAssets[i],currentLiabilities[i],currentAssetsAnterior,currentLiabilitiesAnterior)
           except:
             changeInNwc.append(0)
         else:
@@ -634,35 +661,57 @@ for h in range(len(competidores)):
             changeInNwc.append((currentAssets[i]-currentLiabilities[i])-(currentAssets[i-1]-currentLiabilities[i-1]))
           except:
             changeInNwc.append(0)
-      FCF = [nopat[i]-capex+depreciation-changeInNwc[i] for i in range(cantidadAniosRegistrados)]
+
+      FCF = [np.round(nopat[i]+capex+depreciation-changeInNwc[i],0) for i in range(cantidadAniosRegistrados)]
+      """print("\nCHANGE")
+      for ajk in range(cantidadAniosRegistrados):
+        print(nopat[ajk])
+        print(capex)
+        print(depreciation)
+        print(changeInNwc[ajk])
+      print("\nCHANGE")"""
+
+
+      print("currentLiabilitiesAnterior")
+      print(currentLiabilitiesAnterior)
+      print("currentAssetsAnterior")
+      print(currentAssetsAnterior)
+
+      print("FCF")
+      print(FCF)
+
+      print("changeInNwc")
+      print(changeInNwc)
 
       
       terminalValue = [0 for i in range(cantidadAniosRegistrados)]
-      terminalValue[-1] = (FCF[-1]*100*(1+(terminalGrowthRate)/100)/(costOfCapital-terminalGrowthRate)) #el numero 10 lo modificamos
-      totalCashFlow = [(FCF[i]+terminalValue[i]) for i in range(cantidadAniosRegistrados)]
-      presentValueOfFlows = [totalCashFlow[i]/pow((1+costOfCapital/100),i) for i in range(cantidadAniosRegistrados)] # Cambiamos cantidaddeanioosregistrados por i 
+      terminalValue[-1] = np.round((FCF[-1]*(1+(terminalGrowthRate)/100)/(costOfCapital-terminalGrowthRate)),0) #SACAR EL 100 de FCF[-1]*100 -> el de terminalgrowthrate esta bien
+
+      totalCashFlow = [np.round((FCF[i]+terminalValue[i]),0) for i in range(cantidadAniosRegistrados)]
+      presentValueOfFlows = [np.round(totalCashFlow[i]/pow((1+costOfCapital),i+1),0) for i in range(cantidadAniosRegistrados)] #CAMBIAR EL i por i+1 #NEW#NEW#NEW#NEW # AL CAMBIAR ESTO FUNCIONO!!! #NEWNEWNEWNEW
 
       #   3(TRES) Estas no son listas, son valores nada mas.
-      enterPriseValue = sum(presentValueOfFlows) #SACAMOS LA DIVISION POR MILLON
+      enterPriseValue = np.round(sum(presentValueOfFlows),0)
 
       try:
-        lessCurrentOutstandingDebt = balanceSheet["LongTermDebt"].mean()/millon 
+        lessCurrentOutstandingDebt = np.round(balanceSheet["LongTermDebt"][-1],0)
       except:
         lessCurrentOutstandingDebt = 0
       equityValue = (enterPriseValue -lessCurrentOutstandingDebt) #Falta mas exceso de cash pero no hay en estos casos
       try:
         modules = 'defaultKeyStatistics'
-        currentSharesOutstanding = int(str(aapl.get_modules(modules)).split("sharesOutstanding")[1].split(":")[1].split(",")[0])/millon
+        currentSharesOutstanding = np.round(float(str(aapl.get_modules(modules)).split("sharesOutstanding")[1].split(":")[1].split(",")[0]),2) ##FALTA np.round(
       except:
         continue
     
       equityValuePerShare = equityValue/currentSharesOutstanding  
+      
       #   4(CUATRO) 
-      currentSharePrice = aapl.financial_data[accion]["currentPrice"] 
+      currentSharePrice = aapl.financial_data[accion]["currentPrice"]
       
       discount = (equityValuePerShare-currentSharePrice)/currentSharePrice*100 #
 
-      """print("changeInNwc")
+      print("changeInNwc")
       print(changeInNwc)
       print("currentLiabilitiesAnterior")
       print(currentLiabilitiesAnterior)
@@ -685,7 +734,7 @@ for h in range(len(competidores)):
       print("currentSharePrice")
       print(currentSharePrice)
       print("discount")
-      print(discount)"""
+      print(discount)
 
       #HASTA ACA REGISTRADO: CHEQUEAR ENTERPRISE VALLUE
       
