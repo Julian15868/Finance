@@ -610,7 +610,11 @@ for h in range(len(competidores)):
       except:
         debt = 0
       marketCap = aapl.summary_detail[stocksTotales[acc]]["marketCap"]
-      ke = risk + marketPremium*beta   
+      if marketCap>pow(10,9):
+        sizePremium = 1/100
+      else:
+        sizePremium = 2/100
+      ke = risk + marketPremium*beta + sizePremium
       costOfCapital = np.round(kd*(1-taxRate/100)*debt/(debt+marketCap)+ke*marketCap/(debt+marketCap),4) #*100 QUITAR posiblemente, Verificar esto, el 100 me olvide de anotar porque lo puse, verificar
 
       print("revenue")
